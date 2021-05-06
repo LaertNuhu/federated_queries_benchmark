@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+  namenode:
+    image: hadoop-namenode
+    container_name: namenode
+    restart: always
+    volumes:
+      - namenode:/hadoop/dfs/name
+    ports:
+      - 9870:9870
+      - 9000:9000
+    environment:
+      - CLUSTER_NAME=hive-test
+    env_file:
+      - ../hadoop/hadoop.env
+
+  datanode-1:
+    image: hadoop-datanode
+    container_name: datanode-1
+    restart: always
+    volumes:
+      - datanode-1:/hadoop/dfs/data
+    ports:
+      - 19864:9864
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+    env_file:
+      - ../hadoop/hadoop.env
+
+  datanode-2:
+    image: hadoop-datanode
+    container_name: datanode-2
+    restart: always
+    volumes:
+      - datanode-2:/hadoop/dfs/data
+    ports:
+      - 29864:9864
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+    env_file:
+      - ../hadoop/hadoop.env
+
+  hive-server:
+    image: hive
+    container_name: hive-server
+    restart: always
+    ports:
+      - 10000:10000
+    environment:
+      # Why do we need this overwrite?
+      - HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore/metastore
+      - SERVICE_PRECONDITION=hive-metastore:9083
+    env_file:
+      - ../hadoop/hadoop.env
+      - ./hive.env
+    command: /run-server.sh
+
+  hive-metastore:
+    image: hive
+    container_name: hive-metastore
+    restart: always
+    ports:
+      - 9083:9083
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870 datanode-1:9864 datanode-2:9864 postgres-metastore:5432
+    env_file:
+      - ../hadoop/hadoop.env
+      - ./hive.env
+    command: /run-metastore.sh
+
+  postgres-metastore:
+    image: postgres
+    container_name: postgres-metastore
+    restart: always
+    environment:
+      # These values have to match the HIVE_SITE_CONF_javax_jdo_option_* values in hive.env
+      - POSTGRES_DB=metastore
+      - POSTGRES_USER=hive
+      - POSTGRES_PASSWORD=hivePW123
+
+volumes:
+  namenode:
+  datanode-1:
+  datanode-2:
+
+networks:
+  default:
+    name: hive-testnet

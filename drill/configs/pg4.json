@@ -1,0 +1,1 @@
+{"name":"pg4", "config":{"type":"jdbc","enabled":true,"driver":"org.postgresql.Driver","url":"jdbc:postgresql://pg-4:5432/db1","username":"postgres","password":"123456"}}

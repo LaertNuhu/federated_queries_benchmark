@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  spark-master:
+    image: polydb/spark-master
+    container_name: spark-master
+    restart: always
+    ports:
+      - 8080:8080
+      - 7077:7077
+    env_file:
+      - ./spark.env
+
+  spark-worker-1:
+    image: polydb/spark-worker
+    container_name: spark-worker-1
+    restart: always
+    ports:
+      - 18081:8081
+    environment:
+      - SERVICE_PRECONDITION=spark-master:7077
+    env_file:
+      - ./spark.env
+
+  spark-worker-2:
+    image: polydb/spark-worker
+    container_name: spark-worker-2
+    restart: always
+    ports:
+      - 28081:8081
+    environment:
+      - SERVICE_PRECONDITION=spark-master:7077
+    env_file:
+      - ./spark.env
+
+networks:
+  default:
+    name: spark-testnet

@@ -1,0 +1,87 @@
+version: "3.8"
+
+services:
+  namenode:
+    image: hadoop-namenode
+    container_name: namenode
+    restart: always
+    volumes:
+      - namenode:/hadoop/dfs/name
+    ports:
+      - 9870:9870
+      - 9000:9000
+    environment:
+      - CLUSTER_NAME=hadoop-test
+    env_file:
+      - ./hadoop.env
+
+  datanode-1:
+    image: hadoop-datanode
+    container_name: datanode-1
+    restart: always
+    volumes:
+      - datanode-1:/hadoop/dfs/data
+    ports:
+      - 19864:9864
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+    env_file:
+      - ./hadoop.env
+
+  datanode-2:
+    image: hadoop-datanode
+    container_name: datanode-2
+    restart: always
+    volumes:
+      - datanode-2:/hadoop/dfs/data
+    ports:
+      - 29864:9864
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+    env_file:
+      - ./hadoop.env
+
+  resourcemanager:
+    image: hadoop-resourcemanager
+    container_name: resourcemanager
+    restart: always
+    ports:
+      - 8088:8088
+    environment:
+      - SERVICE_PRECONDITION=namenode:9000 namenode:9870 datanode-1:9864 datanode-2:9864
+    env_file:
+      - ./hadoop.env
+
+  nodemanager:
+    image: hadoop-nodemanager
+    container_name: nodemanager
+    restart: always
+    ports:
+      - 8042:8042
+    environment:
+      - SERVICE_PRECONDITION=namenode:9000 namenode:9870 datanode-1:9864 datanode-2:9864 resourcemanager:8088
+    env_file:
+      - ./hadoop.env
+
+  timelineserver:
+    image: hadoop-timelineserver
+    container_name: timelineserver
+    restart: always
+    volumes:
+      - timelineserver:/hadoop/yarn/timeline
+    ports:
+      - 8188:8188
+    environment:
+      - SERVICE_PRECONDITION=namenode:9000 namenode:9870 datanode-1:9864 datanode-2:9864 resourcemanager:8088
+    env_file:
+      - ./hadoop.env
+
+volumes:
+  namenode:
+  datanode-1:
+  datanode-2:
+  timelineserver:
+
+networks:
+  default:
+    name: hadoop-testnet

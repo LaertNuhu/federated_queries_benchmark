@@ -1,0 +1,87 @@
+version: "3.7"
+
+services:
+  namenode:
+    image: polydb/hadoop-namenode
+    container_name: namenode
+    restart: always
+    ports:
+      - 50070:50070
+      - 9000:9000
+    environment:
+      - CLUSTER_NAME=hbase-test
+    env_file:
+      - ../hadoop/hadoop.env
+
+  datanode-1:
+    image: polydb/hadoop-datanode
+    container_name: datanode-1
+    restart: always
+    ports:
+      - 51075:50075
+    environment:
+      - SERVICE_PRECONDITION=namenode:50070
+    env_file:
+      - ../hadoop/hadoop.env
+
+  datanode-2:
+    image: polydb/hadoop-datanode
+    container_name: datanode-2
+    restart: always
+    ports:
+      - 52075:50075
+    environment:
+      - SERVICE_PRECONDITION=namenode:50070
+    env_file:
+      - ../hadoop/hadoop.env
+
+  zoo:
+    image: zookeeper
+    container_name: zoo
+    restart: always
+    ports:
+      - 2181:2181
+      - 18080:8080
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_SERVERS=server.1=0.0.0.0:2888:3888;2181
+
+  hbase-master:
+    image: polydb/hbase-master
+    container_name: hbase-master
+    restart: always
+    ports:
+      - 16010:16010
+      - 16000:16000
+    environment:
+      - SERVICE_PRECONDITION=namenode:50070 datanode-1:50075 datanode-2:50075 zoo:2181
+    env_file:
+      - ./hbase.env
+
+  regionserver-1:
+    image: polydb/hbase-regionserver
+    container_name: regionserver-1
+    restart: always
+    ports:
+      - 16030:16030
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=regionserver-1
+      - SERVICE_PRECONDITION=namenode:50070 datanode-1:50075 datanode-2:50075 zoo:2181 hbase-master:16010
+    env_file:
+      - ./hbase.env
+
+  regionserver-2:
+    image: polydb/hbase-regionserver
+    container_name: regionserver-2
+    restart: always
+    ports:
+      - 26030:16030
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=regionserver-2
+      - SERVICE_PRECONDITION=namenode:50070 datanode-1:50075 datanode-2:50075 zoo:2181 hbase-master:16010
+    env_file:
+      - ./hbase.env
+
+networks:
+  default:
+    name: hbase-testnet

@@ -1,0 +1,109 @@
+version: "3.8"
+
+services:
+  namenode:
+    image: polydb/hadoop-namenode
+    container_name: namenode
+    restart: always
+    volumes:
+      - namenode:/hadoop/dfs/name
+      - test-data:/data
+    ports:
+      - 9870:9870
+      - 9000:9000
+    environment:
+      - CLUSTER_NAME=data_generator-test
+    env_file:
+      - ../hadoop/hadoop.env
+
+  datanode-1:
+    image: polydb/hadoop-datanode
+    container_name: datanode-1
+    restart: always
+    volumes:
+      - datanode-1:/hadoop/dfs/data
+    ports:
+      - 19864:9864
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+    env_file:
+      - ../hadoop/hadoop.env
+
+  datanode-2:
+    image: polydb/hadoop-datanode
+    container_name: datanode-2
+    restart: always
+    volumes:
+      - datanode-2:/hadoop/dfs/data
+    ports:
+      - 29864:9864
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+    env_file:
+      - ../hadoop/hadoop.env
+
+  zoo:
+    image: zookeeper
+    container_name: zoo
+    restart: always
+    ports:
+      - 2181:2181
+      - 8080:8080
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_SERVERS=server.1=0.0.0.0:2888:3888;2181
+
+  hbase-master:
+    image: polydb/hbase-master
+    container_name: hbase-master
+    restart: always
+    volumes:
+      - test-data:/data
+    ports:
+      - 16010:16010
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870 datanode-1:9864 datanode-2:9864 zoo:2181
+    env_file:
+      - ../hbase/hbase.env
+
+  regionserver-1:
+    image: polydb/hbase-regionserver
+    container_name: regionserver-1
+    restart: always
+    ports:
+      - 16030:16030
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=regionserver-1
+      - SERVICE_PRECONDITION=namenode:9870 datanode-1:9864 datanode-2:9864 zoo:2181 hbase-master:16010
+    env_file:
+      - ../hbase/hbase.env
+
+  regionserver-2:
+    image: polydb/hbase-regionserver
+    container_name: regionserver-2
+    restart: always
+    ports:
+      - 26030:16030
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=regionserver-2
+      - SERVICE_PRECONDITION=namenode:9870 datanode-1:9864 datanode-2:9864 zoo:2181 hbase-master:16010
+    env_file:
+      - ../hbase/hbase.env
+
+  data-generator:
+    image: polydb/python-generator
+    container_name: data-generator
+    volumes:
+      - test-data:/data
+    env_file:
+      - ./data_generator.env
+
+volumes:
+  namenode:
+  datanode-1:
+  datanode-2:
+  test-data:
+
+networks:
+  default:
+    name: data_generator-testnet
