@@ -21,7 +21,7 @@ docker run -it --rm -v test-data:/data --env-file data_generator/data_generator.
 ```
 or
 ```
-docker run -it --rm -v test-data:/data --env-file data_generator/data_generator.env --name data-generator polydb/tpch-generator
+docker run -it --rm -v test-data:/data --env-file data_generator/data_generator.env --name data-generator tpch-generator
 ```
 
 Run `docker-compose` to start all necessary containers.
