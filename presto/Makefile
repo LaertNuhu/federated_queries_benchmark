@@ -1,2 +1,2 @@
 build:
-	docker build presto/ -t presto
+	docker build presto_single_instance/ -t presto
