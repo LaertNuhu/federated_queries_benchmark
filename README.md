@@ -4,60 +4,34 @@
 To run polydb-docker, you need `docker` and `docker-compose` installed on your system.
 This prototype was tested with Docker 19.03 and docker-compose 1.27 but may work with other versions as well.
 
-At first, you need to clone or copy the `metaRepo` repository to the correct location since this is a private repository.
-```
-git clone https://github.com/spapadop/metaRepo.git metaRepo/metaRepo/code
-```
-
 To prepare for execution, you need to build all of the necessary containers.
 ```
 make build
 ```
 
-## Execution
-Run either the Python or TPC-H data generator container to generate a Docker volume with test data.
+After building the containers you need to create the test-data docker volume. Run this step only once.
+
 ```
-docker run -it --rm -v test-data:/data --env-file data_generator/data_generator.env --name data-generator polydb/python-generator
-```
-or
-```
-docker run -it --rm -v test-data:/data --env-file data_generator/data_generator.env --name data-generator polydb/tpch-generator
+make generate-test-data
 ```
 
-Run `docker-compose` to start all necessary containers.
-```
-docker-compose up
-```
+After it is completed you should have a volume named test-data when `docker volume ls` is executed
 
-Run the data import scripts for the data generator you used to import data into HDFS and HBase.
+While test-data is being generated you can already run:
 ```
-docker exec -it namenode bash /import_python.sh
-docker exec -it hbase-master bash /import_python.sh
-```
-or
-```
-docker exec -it namenode bash /import_tpch.sh
-docker exec -it hbase-master bash /import_tpch.sh
-```
+make run
+``` 
+This command will start all the conatiners defined on your docker compose file. 
 
-After you imported the test data, call `init` on the metaRepo service.
-```
-curl -X POST http://localhost:8181/admin/init
-```
+You should have: 
+- jupyter notebook running on `localhost:8888` (password is _demo_)
+- drill web ui running on `localhost:8047`
+- presto web ui running on `localhost:8080`
 
-Enter a shell on the polydb container to run the example jobs.
-```
-docker exec -it polydb bash
-```
+If another service has the previos mentioned ports occupied, please modify docker-compose file accordingly. 
 
-Within the polydb shell, you can use predefined aliases to execute jobs.
+To populate databases with test-data run:
 ```
-TODO
+make populate
 ```
-
-To clean up, shut down `docker-compose` and remove the data generator container and the test data volume.
-```
-# Use the -v option to remove all docker volumes that were created during the test
-docker-compose down -v
-docker volume rm test-data
-```
+This step is to be executed after `make generate-test-data` command is compleded successfully, and `make run` was already executed.

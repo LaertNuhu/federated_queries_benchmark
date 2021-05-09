@@ -2,9 +2,9 @@ POSTGRESS := $(shell docker ps --format '{{.Names}}' --filter name=pg)
 build:
 	$(MAKE) -C data_generator
 	# $(MAKE) -C hadoop
-	#$(MAKE) -C hbase
+	# $(MAKE) -C hbase
 	# $(MAKE) -C hive
-	#$(MAKE) -C metaRepo
+	# $(MAKE) -C metaRepo
 	# $(MAKE) -C polydb
 	# $(MAKE) -C spark
 	$(MAKE) -C postgres
@@ -12,6 +12,9 @@ build:
 	$(MAKE) -C presto
 	$(MAKE) -C drill
 	$(MAKE) -C jupyter
+
+generate-test-data:
+	docker run -it --rm -v test-data:/data --env-file data_generator/data_generator.env --name data-generator tpch-generator
 
 run:
 	docker-compose -f .\docker-compose.yml up
