@@ -28,4 +28,5 @@ populate:
 		echo $$container; \
         docker exec $$container /bin/sh -c "cd / && /bin/bash ./import_tpch_sf1.sh"; \
     done
-	docker exec drill /bin/sh -c "./create_plugins.sh"
+	docker exec drill /bin/sh -c "/create_plugins.sh"
+	docker exec drill2 /bin/sh -c "/create_plugins.sh"
