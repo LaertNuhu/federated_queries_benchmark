@@ -1,0 +1,1 @@
+{"name":"mysql2", "config":{"type":"jdbc","enabled":true,"driver":"com.mysql.jdbc.Driver","url":"jdbc:mysql://mysql1:3306","username":"presto","password":"mysql"}}
