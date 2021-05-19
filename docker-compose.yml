@@ -198,6 +198,22 @@ services:
       - "3306:3306"
     volumes:
       - test-data:/data
+      - ./mysql/import:/import
+      - mysqlvolume1:/var/lib/mysql
+
+  mysql1:
+    image: mysql
+    container_name: mysql1
+    environment:
+      MYSQL_ROOT_PASSWORD: 'mysql'
+      MYSQL_USER: 'presto'
+      MYSQL_PASSWORD: 'mysql'
+    ports:
+      - "4306:3306"
+    volumes:
+      - test-data:/data
+      - ./mysql/import:/import
+      - mysqlvolume2:/var/lib/mysql
 
   mongodb:
     image: mongo
@@ -222,50 +238,6 @@ services:
       - MYSQL_USER=mariadb
       - MYSQL_PASSWORD=123456
 
-  mariadb-2:
-    image: mymaria
-    container_name: mdb2
-    restart: always
-    volumes:
-      - test-data:/data
-      - mvolume2:/var/lib/mysql
-    ports:
-      - 23306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=mdb
-      - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=123456
-
-  mariadb-3:
-    image: mymaria
-    container_name: mdb3
-    restart: always
-    volumes:
-      - test-data:/data
-      - mvolume3:/var/lib/mysql
-    ports:
-      - 33306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=mdb
-      - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=123456
-
-  mariadb-4:
-    image: mymaria
-    container_name: mdb4
-    restart: always
-    volumes:
-      - test-data:/data
-      - mvolume4:/var/lib/mysql
-    ports:
-      - 43306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=mdb
-      - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=123456
 
   presto:
     image: presto
@@ -277,9 +249,6 @@ services:
       - postgres-3
       - postgres-4
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
-      - mariadb-4
       - mongodb
       - mysql
     depends_on:
@@ -288,9 +257,6 @@ services:
       - postgres-3
       - postgres-4
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
-      - mariadb-4
       - mongodb
       - mysql
     ports: 
@@ -328,9 +294,6 @@ services:
       - postgres-3
       - postgres-4
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
-      - mariadb-4
       - mongodb
       - mysql
     depends_on:
@@ -339,9 +302,6 @@ services:
       - postgres-3
       - postgres-4
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
-      - mariadb-4
       - mongodb
       - mysql
     ports: 
@@ -371,9 +331,6 @@ services:
   #     - postgres-3
   #     - postgres-4
   #     - mariadb-1
-  #     - mariadb-2
-  #     - mariadb-3
-  #     - mariadb-4
   #     - mongodb
   #     - mysql
   #   depends_on:
@@ -382,9 +339,6 @@ services:
   #     - postgres-3
   #     - postgres-4
   #     - mariadb-1
-  #     - mariadb-2
-  #     - mariadb-3
-  #     - mariadb-4
   #     - mongodb
   #     - mysql
   #   ports: 
@@ -402,9 +356,6 @@ services:
       - postgres-3
       - postgres-4
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
-      - mariadb-4
       - mongodb
       - mysql
     ports: 
@@ -463,6 +414,8 @@ volumes:
   mvolume2:
   mvolume3:
   mvolume4:
+  mysqlvolume1:
+  mysqlvolume2:
 
 networks:
   default:

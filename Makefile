@@ -1,4 +1,6 @@
 POSTGRESS := $(shell docker ps --format '{{.Names}}' --filter name=pg)
+MYSQL := $(shell docker ps --format '{{.Names}}' --filter name=mysql)
+DRILL := $(shell docker ps --format '{{.Names}}' --filter name=drill)
 build:
 	$(MAKE) -C data_generator
 	# $(MAKE) -C hadoop
@@ -23,10 +25,16 @@ stop:
 	docker-compose -f .\docker-compose.yml down
 
 populate:
+	for container in $(DRILL) ; do \
+		echo $$container; \
+		docker exec $$container /bin/sh -c "/create_plugins.sh"; \
+    done
 	@echo MY_VAR IS $(POSTGRESS)
 	for container in $(POSTGRESS) ; do \
 		echo $$container; \
         docker exec $$container /bin/sh -c "cd / && /bin/bash ./import_tpch_sf1.sh"; \
     done
-	docker exec drill /bin/sh -c "/create_plugins.sh"
-	docker exec drill2 /bin/sh -c "/create_plugins.sh"
+	for container in $(MYSQL) ; do \
+		echo $$container; \
+		docker exec $$container /bin/sh -c "/import/populate.sh"; \
+    done
