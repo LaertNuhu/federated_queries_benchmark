@@ -36,6 +36,11 @@ COPY import/create_tpch_sf1.sql /create_tpch_sf1.sql
 COPY import/import_tpch_sf1.sql /import_tpch_sf1.sql
 COPY import/indexes_tpch_sf1.sql /indexes_tpch_sf1.sql
 
+COPY import/create_tpch_sf10.sql /create_tpch_sf10.sql
+COPY import/import_tpch_sf10.sql /import_tpch_sf10.sql
+COPY import/indexes_tpch_sf10.sql /indexes_tpch_sf10.sql
+
+COPY privileges.sql /privileges.sql
 
 VOLUME /var/lib/mysql
 

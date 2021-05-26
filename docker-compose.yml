@@ -187,16 +187,6 @@ services:
     ports:
       - 45432:5432
 
-  postgres-5:
-    image: postgresdb
-    container_name: pg-5
-    restart: always
-    volumes:
-      - test-data:/data
-      - pgvolume5:/var/lib/postgresql/
-    ports:
-      - 55432:5432
-
   mysql:
     image: mysql
     container_name: mysql
@@ -208,6 +198,22 @@ services:
       - "3306:3306"
     volumes:
       - test-data:/data
+      - ./mysql/import:/import
+      - mysqlvolume1:/var/lib/mysql
+
+  mysql1:
+    image: mysql
+    container_name: mysql1
+    environment:
+      MYSQL_ROOT_PASSWORD: 'mysql'
+      MYSQL_USER: 'presto'
+      MYSQL_PASSWORD: 'mysql'
+    ports:
+      - "4306:3306"
+    volumes:
+      - test-data:/data
+      - ./mysql/import:/import
+      - mysqlvolume2:/var/lib/mysql
 
   mongodb:
     image: mongo
@@ -232,35 +238,6 @@ services:
       - MYSQL_USER=mariadb
       - MYSQL_PASSWORD=123456
 
-  mariadb-2:
-    image: mymaria
-    container_name: mdb2
-    restart: always
-    volumes:
-      - test-data:/data
-      - mvolume2:/var/lib/mysql
-    ports:
-      - 23306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=mdb
-      - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=123456
-
-  mariadb-3:
-    image: mymaria
-    container_name: mdb3
-    restart: always
-    volumes:
-      - test-data:/data
-      - mvolume3:/var/lib/mysql
-    ports:
-      - 33306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=mdb
-      - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=123456
 
   presto:
     image: presto
@@ -271,10 +248,7 @@ services:
       - postgres-2
       - postgres-3
       - postgres-4
-      - postgres-5
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
       - mongodb
       - mysql
     depends_on:
@@ -282,28 +256,44 @@ services:
       - postgres-2
       - postgres-3
       - postgres-4
-      - postgres-5
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
       - mongodb
       - mysql
     ports: 
       - 8080:8080
 
+  # zookeeper:
+  #   image: zookeeper:3.7.0
+  #   hostname: zookeeper
+  #   container_name: zookeeper
+  #   ports:
+  #     - "2181:2181"
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+
   drill:
     image: drill
+    restart: always
     tty: true
     container_name: drill
+    hostname: drill
+    environment:
+      HEAP_MEMORY_FRACTION: 2
+      # LOG_LEVEL: INFO
+      # CLUSTERED_MODE: 'true'
+    # volumes:
+    #   - ./drill/drill-override.conf:/opt/drill/conf/drill-override.conf
+    expose:
+      - 31010
+      - 31011
+      - 31012
     links:
       - postgres-1
       - postgres-2
       - postgres-3
       - postgres-4
-      - postgres-5
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
       - mongodb
       - mysql
     depends_on:
@@ -311,14 +301,50 @@ services:
       - postgres-2
       - postgres-3
       - postgres-4
-      - postgres-5
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
       - mongodb
       - mysql
     ports: 
       - 8047:8047
+    # cap_add:
+    #   - SYS_PTRACE
+
+  # drill2:
+  #   image: drill
+  #   restart: always
+  #   tty: true
+  #   container_name: drill2
+  #   hostname: drill2
+  #   environment:
+  #     HEAP_MEMORY_FRACTION: 2
+  #     LOG_LEVEL: INFO
+  #     CLUSTERED_MODE: 'true'
+  #   volumes:
+  #     - ./drill/drill-override.conf:/opt/drill/conf/drill-override.conf
+  #   expose:
+  #     - 31010
+  #     - 31011
+  #     - 31012
+  #   links:
+  #     - postgres-1
+  #     - postgres-2
+  #     - postgres-3
+  #     - postgres-4
+  #     - mariadb-1
+  #     - mongodb
+  #     - mysql
+  #   depends_on:
+  #     - postgres-1
+  #     - postgres-2
+  #     - postgres-3
+  #     - postgres-4
+  #     - mariadb-1
+  #     - mongodb
+  #     - mysql
+  #   ports: 
+  #     - 9047:8047
+  #   cap_add:
+  #     - SYS_PTRACE
 
 
   jupyter:
@@ -329,10 +355,7 @@ services:
       - postgres-2
       - postgres-3
       - postgres-4
-      - postgres-5
       - mariadb-1
-      - mariadb-2
-      - mariadb-3
       - mongodb
       - mysql
     ports: 
@@ -354,26 +377,28 @@ services:
   #   image: "lewuathe/presto-coordinator:346"
   #   ports:
   #     - "8085:8080"
-  #   container_name: coordinator
-  #   command: http://coordinator:8080 coordinator
+  #   container_name: presto
+  #   command: http://presto:8080 presto
   #   volumes:
   #     - ./presto/catalog:/usr/local/presto/etc/catalog
 
   # presto-worker0:
   #   image: "lewuathe/presto-worker:346"
+  #   restart: always
   #   container_name: worker0
   #   ports:
   #     - "8086:8081"
-  #   command: http://coordinator:8080 worker0
+  #   command: http://presto:8080 worker0
   #   volumes:
   #     - ./presto/catalog:/usr/local/presto/etc/catalog
 
   # presto-worker1:
   #   image: "lewuathe/presto-worker:346"
+  #   restart: always
   #   container_name: worker1
   #   ports:
   #     - "8087:8081"
-  #   command: http://coordinator:8080 worker1
+  #   command: http://presto:8080 worker1
   #   volumes:
   #     - ./presto/catalog:/usr/local/presto/etc/catalog
 
@@ -385,11 +410,12 @@ volumes:
   pgvolume2:
   pgvolume3:
   pgvolume4:
-  pgvolume5:
   mvolume:
   mvolume2:
   mvolume3:
-
+  mvolume4:
+  mysqlvolume1:
+  mysqlvolume2:
 
 networks:
   default:
