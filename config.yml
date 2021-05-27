@@ -1,0 +1,71 @@
+presto:
+  sources: 
+    - mysql:
+        url: jdbc:url
+        user: username
+        password: pwd
+        jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
+        tables: ["li_source","s_source"]
+    - postgress:
+        url: jdbc:url
+        user: username
+        password: pwd
+        jar-location: url
+        tables: ["n_source","r_source","s_source"]
+    - ...
+  queries: ["q1","q2", ...] # or ["q1:q7"]
+  metrics: ["processing time", "rows/sec"]
+---
+drill:
+  sources: 
+    - mysql:
+        url: jdbc:url
+        user: username
+        password: pwd
+        jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
+        tables: ["li_source","s_source"]
+    - postgress:
+        url: jdbc:url
+        user: username
+        password: pwd
+        jar-location: url
+        tables: ["n_source","r_source","s_source"]
+    - ...
+  queries: ["q1","q2", ...] # or ["q1:q7"]
+  metrics: ["processing time", "rows/sec"]
+---
+spark:
+  sources: 
+    - mysql:
+        url: jdbc:url
+        user: username
+        password: pwd
+        jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
+        tables: ["li_source","s_source"]
+    - postgress:
+        url: jdbc:url
+        user: username
+        password: pwd
+        jar-location: url
+        tables: ["n_source","r_source","s_source"]
+    - ...
+  queries: ["q1","q2", ...] # or ["q1:q7"]
+  metrics: ["processing time", "rows/sec"]
+---
+hive:
+  sources: 
+    - mysql:
+        url: jdbc:url
+        user: username
+        password: pwd
+        jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
+        tables: ["li_source","s_source"]
+    - postgress:
+        url: jdbc:url
+        user: username
+        password: pwd
+        jar-location: url
+        tables: ["n_source","r_source","s_source"]
+    - ...
+  queries: ["q1","q2", ...] # or ["q1:q7"]
+  metrics: ["processing time", "rows/sec"]
