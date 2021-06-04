@@ -11,7 +11,7 @@ class Configurator:
     def __init__(self, system="all"):
         self.parsed_config = self.parse_config()
         self.mapper = Mapper()
-        self.system = system
+        self.system = system.lower()
 
     def parse_config(self):
         config = Path("./config.yml").read_text()
@@ -67,7 +67,7 @@ class Configurator:
         result = {}
         if self.system == "all":
             for system in self.parsed_config:
-                self.system = system
+                self.system = system.lower()
                 result[self.system] = {}
                 sources = self.build_source_dict()
                 scales = self.get_scales()
@@ -90,12 +90,3 @@ class Configurator:
                 rendered_queries = self.render_queries(scales, sources)
                 result[self.system][scales] = rendered_queries
         return result
-
-
-# if __name__ == "__main__":
-#     configurator = Configurator()
-#     # sources = configurator.build_source_dict()
-#     # sources_config = configurator.map_tables_to_sources(scale="sf1", **sources)
-#     # rendered_queries = configurator.templator.get_rendered_queries(sources_config)
-#     configurator.get_queries()
-#     # print(rendered_queries["q1"])
