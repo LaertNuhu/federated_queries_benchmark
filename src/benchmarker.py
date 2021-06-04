@@ -1,8 +1,6 @@
 import re
 import sys
 import time
-import prestodb.dbapi as presto
-from pydrill.client import PyDrill
 import pandas as pd
 from configurator import Configurator
 from pathlib import Path
@@ -14,7 +12,8 @@ class Benchmarker:
         self.configurator = Configurator(system=system)
         self.queries = self.configurator.get_queries()
 
-    def sort_human(self, l):
+    def __sort_human(self, l):
+        """Sorts a list of strings correctly."""
         convert = lambda text: float(text) if text.isdigit() else text
         alphanum = lambda key: [
             convert(c) for c in re.split("([-+]?[0-9]*\.?[0-9]*)", key)
@@ -23,6 +22,7 @@ class Benchmarker:
         return l
 
     def benchmark(self, system, query):
+        """Runs query based on a system"""
         try:
             start = time.time()
             # system.run_query(query)
@@ -35,26 +35,30 @@ class Benchmarker:
             log.write("\n")
             return "0"
 
-    def create_results_file(self, system):
+    def __create_results_file(self, system):
+        """Creates results csv file"""
         return Path(f"./benchmark/results/{system}.csv").open("a")
 
     def __iterate_systems(self, callback):
+        """Execute a callback function for every system."""
         systems = list(self.queries.keys())
         for system in systems:
             callback(system)
 
     def __iterate_scale_factors(self, system, callback):
+        """Execute a callback function for every scale factor"""
         scale_factors = list(self.queries[system].keys())
         for scale_factor in scale_factors:
             callback(scale_factor)
 
     def __construct_header(self, system):
+        """It creates the header string and adds into each result file."""
         first_scale_factor = list(self.queries[system].keys())[0]
-        file = self.create_results_file(system)
+        file = self.__create_results_file(system)
         queries_initials = [
             key for key in self.queries[system][first_scale_factor].keys()
         ]
-        reordered_query_initials = self.sort_human(queries_initials)
+        reordered_query_initials = self.__sort_human(queries_initials)
         queries_initials_to_string = ",".join(reordered_query_initials)
         header = f"sf,{queries_initials_to_string}"
         file.write(header)
@@ -62,30 +66,27 @@ class Benchmarker:
         file.close()
 
     def write_headers(self):
+        """Executes public function."""
         self.__iterate_systems(lambda system: self.__construct_header(system))
 
-    def run_query_and_save_results(self, system, scaleFactor, iterations=1):
-        f = self.create_results_file(system)
+    def __run_query_and_save_results(self, system, scaleFactor, iterations=1):
+        f = self.__create_results_file(system)
         queries = self.queries[system][scaleFactor]
         queries_ids = [key for key in queries.keys()]
-        reordered_queries_ids = self.sort_human(queries_ids)
-        f.write(scaleFactor)
-        f.flush()
-        for query_id in reordered_queries_ids:
-            benchmark_result = self.benchmark(system, queries[query_id])
-            f.write(",")
-            f.write(benchmark_result)
+        reordered_queries_ids = self.__sort_human(queries_ids)
+        for _ in range(iterations) + 1:
+            f.write(scaleFactor)
             f.flush()
-        f.write("\n")
+            for query_id in reordered_queries_ids:
+                benchmark_result = self.benchmark(system, queries[query_id])
+                f.write(",")
+                f.write(benchmark_result)
+                f.flush()
+            f.write("\n")
 
     def run_benchmarks(self):
         self.__iterate_systems(
             lambda system: benchmarker.__iterate_scale_factors(
-                system, lambda sf: self.run_query_and_save_results(system, sf)
+                system, lambda sf: self.__run_query_and_save_results(system, sf)
             )
         )
-
-
-if __name__ == "__main__":
-    benchmarker = Benchmarker()
-    benchmarker.run_benchmarks()
