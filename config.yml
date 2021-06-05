@@ -70,7 +70,7 @@ drill:
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
-        - mysqlvolume1:/var/lib/mysql
+        - mysql:/var/lib/mysql
     postgress:
       image: postgresdb
       url: jdbc:url
@@ -81,7 +81,7 @@ drill:
       ports: ["35432:5432"]
       volumes:
         - ./mysql/import:/import
-        - postgress1:/var/lib/postgresql/
+        - postgress:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1
@@ -97,7 +97,7 @@ spark:
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
-        - mysqlvolume1:/var/lib/mysql
+        - mysql:/var/lib/mysql
     postgress:
       image: postgresdb
       url: jdbc:url
@@ -108,7 +108,7 @@ spark:
       ports: ["35432:5432"]
       volumes:
         - ./mysql/import:/import
-        - postgress1:/var/lib/postgresql/
+        - postgress:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1
@@ -124,7 +124,7 @@ hive:
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
-        - mysqlvolume1:/var/lib/mysql
+        - mysql:/var/lib/mysql
     postgress:
       image: postgresdb
       url: jdbc:url
@@ -135,7 +135,7 @@ hive:
       ports: ["35432:5432"]
       volumes:
         - ./mysql/import:/import
-        - postgress1:/var/lib/postgresql/
+        - postgress:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1

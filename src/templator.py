@@ -23,12 +23,18 @@ class Templator:
         results = []
         if "sources" in config:
             result = jinja2.Template(sources_config_yml.read_text()).render(**config)
+            Path(f"./src/compose_files/docker-compose-{system}.yml").parent.mkdir(
+                parents=True, exist_ok=True
+            )
             Path(f"./src/compose_files/docker-compose-{system}.yml").write_text(result)
             results.append(Path(f"./src/compose_files/docker-compose-{system}.yml"))
         else:
             for system in config:
                 result = jinja2.Template(sources_config_yml.read_text()).render(
                     **config[system]
+                )
+                Path(f"./src/compose_files/docker-compose-{system}.yml").parent.mkdir(
+                    parents=True, exist_ok=True
                 )
                 Path(f"./src/compose_files/docker-compose-{system}.yml").write_text(
                     result

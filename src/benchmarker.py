@@ -48,7 +48,9 @@ class Benchmarker:
         zip_list = list(zip(systems, resources))
         for system, resource in zip_list:
             # start resources
-            print(f"starting resources for {system}")
+            print(
+                f"starting resources for {system}. Configuration is on {resource.name}"
+            )
             self.operator.start_resource(resource)
             # do smth with the resources
             callback(system)
@@ -104,5 +106,5 @@ class Benchmarker:
 
 
 if __name__ == "__main__":
-    benchmarker = Benchmarker("Presto")
+    benchmarker = Benchmarker()
     benchmarker.run_benchmarks()

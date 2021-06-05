@@ -78,6 +78,7 @@ class Configurator:
                 else:
                     rendered_queries = self.render_queries(scales, sources)
                     result[self.system][scales] = rendered_queries
+            self.system = "all"
         else:
             sources = self.build_source_dict()
             scales = self.get_scales()
