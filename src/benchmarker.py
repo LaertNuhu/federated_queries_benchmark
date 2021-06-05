@@ -4,6 +4,7 @@ import time
 import pandas as pd
 from configurator import Configurator
 from docker_operator import DockerOperator
+from data_generator import TestDataGenerator
 from pathlib import Path
 import random
 
@@ -13,6 +14,8 @@ class Benchmarker:
         self.configurator = Configurator(system=system)
         self.queries = self.configurator.get_queries()
         self.operator = DockerOperator()
+        self.test_data_generator = TestDataGenerator(self.operator)
+        self.test_data_generator.create_test_data()
 
     def __sort_human(self, l):
         """Sorts a list of strings correctly."""
@@ -106,7 +109,7 @@ class Benchmarker:
 
     def run_benchmarks(self, iterations=None):
         self.__iterate_systems(
-            lambda system: benchmarker.__iterate_scale_factors(
+            lambda system: self.__iterate_scale_factors(
                 system,
                 lambda sf: self.__run_query_and_save_results(system, sf, iterations),
             )
@@ -115,4 +118,4 @@ class Benchmarker:
 
 if __name__ == "__main__":
     benchmarker = Benchmarker("Presto")
-    benchmarker.run_benchmarks(5)
+    benchmarker.run_benchmarks()

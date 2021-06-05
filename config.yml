@@ -31,7 +31,6 @@ presto:
       tables: ["li_source"]
       ports: ["15432:5432"]
       volumes:
-        - ./mysql/import:/import
         - postgress1:/var/lib/postgresql/
     postgress1:
       image: postgresdb
@@ -42,7 +41,6 @@ presto:
       tables: ["pa_source","r_source"]
       ports: ["25432:5432"]
       volumes:
-        - ./mysql/import:/import
         - postgress1:/var/lib/postgresql/
     postgress2:
       image: postgresdb
@@ -53,7 +51,6 @@ presto:
       tables: ["c_source","n_source"]
       ports: ["35432:5432"]
       volumes:
-        - ./mysql/import:/import
         - postgress2:/var/lib/postgresql/
   queries: ["q1:q11","d1","d3"]
   metrics: ["processing time", "rows/sec"]
@@ -80,7 +77,6 @@ drill:
       tables: ["n_source","r_source","s_source"]
       ports: ["35432:5432"]
       volumes:
-        - ./mysql/import:/import
         - postgress:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
@@ -107,7 +103,6 @@ spark:
       tables: ["n_source","r_source","s_source"]
       ports: ["35432:5432"]
       volumes:
-        - ./mysql/import:/import
         - postgress:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
@@ -134,7 +129,6 @@ hive:
       tables: ["n_source","r_source","s_source"]
       ports: ["35432:5432"]
       volumes:
-        - ./mysql/import:/import
         - postgress:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
