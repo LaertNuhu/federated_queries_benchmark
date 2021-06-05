@@ -30,3 +30,6 @@ class TestDataGenerator:
 class DataIntegrator:
     def __init__(self, operator) -> None:
         self.operator = operator
+
+    def integrate(self, system):
+        pass
