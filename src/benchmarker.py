@@ -87,7 +87,7 @@ class Benchmarker:
         queries = self.queries[system][scaleFactor]
         queries_ids = [key for key in queries.keys()]
         reordered_queries_ids = self.__sort_human(queries_ids)
-        for _ in range(iterations + 1):
+        for _ in range(iterations):
             f.write(scaleFactor)
             f.flush()
             for query_id in reordered_queries_ids:
@@ -96,15 +96,17 @@ class Benchmarker:
                 f.write(benchmark_result)
                 f.flush()
             f.write("\n")
+            time.sleep(10)
 
-    def run_benchmarks(self):
+    def run_benchmarks(self, iterations=None):
         self.__iterate_systems(
             lambda system: benchmarker.__iterate_scale_factors(
-                system, lambda sf: self.__run_query_and_save_results(system, sf)
+                system,
+                lambda sf: self.__run_query_and_save_results(system, sf, iterations),
             )
         )
 
 
 if __name__ == "__main__":
-    benchmarker = Benchmarker()
-    benchmarker.run_benchmarks()
+    benchmarker = Benchmarker("Drill")
+    benchmarker.run_benchmarks(5)
