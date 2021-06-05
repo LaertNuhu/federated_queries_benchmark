@@ -2,8 +2,6 @@ import jinja2
 import yaml
 from pathlib import Path
 
-from pydrill.client import result
-
 
 class Templator:
     def __init__(self, queries_path=None, selected=None) -> None:
