@@ -1,86 +1,141 @@
 presto:
   sources: 
     mysql1:
+      image: mysql
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["o_source","s_source"]
+      ports: ["3306:3306"]
+      volumes:
+        - ./mysql/import:/import
+        - mysql1:/var/lib/mysql
     mysql2:
+      image: mysql
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["ps_source"]
-    pg1:
+      ports: ["4306:3306"]
+      volumes:
+        - ./mysql/import:/import
+        - mysql2:/var/lib/mysql
+    postgress:
+      image: postgresdb
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url
       tables: ["li_source"]
-    pg2:
+      ports: ["15432:5432"]
+      volumes:
+        - ./mysql/import:/import
+        - postgress1:/var/lib/postgresql/
+    postgress1:
+      image: postgresdb
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url
       tables: ["pa_source","r_source"]
-    pg3:
+      ports: ["25432:5432"]
+      volumes:
+        - ./mysql/import:/import
+        - postgress1:/var/lib/postgresql/
+    postgress2:
+      image: postgresdb
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url
       tables: ["c_source","n_source"]
+      ports: ["35432:5432"]
+      volumes:
+        - ./mysql/import:/import
+        - postgress2:/var/lib/postgresql/
   queries: ["q1:q11","d1","d3"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: [sf1,sf10]
 drill:
   sources: 
     mysql:
+      image: mysql
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["li_source","s_source"]
+      ports: ["3306:3306"]
+      volumes:
+        - ./mysql/import:/import
+        - mysqlvolume1:/var/lib/mysql
     postgress:
+      image: postgresdb
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url
       tables: ["n_source","r_source","s_source"]
+      ports: ["35432:5432"]
+      volumes:
+        - ./mysql/import:/import
+        - postgress1:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1
 spark:
   sources: 
     mysql:
+      image: mysql
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["li_source","s_source"]
+      ports: ["3306:3306"]
+      volumes:
+        - ./mysql/import:/import
+        - mysqlvolume1:/var/lib/mysql
     postgress:
+      image: postgresdb
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url
       tables: ["n_source","r_source","s_source"]
+      ports: ["35432:5432"]
+      volumes:
+        - ./mysql/import:/import
+        - postgress1:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1
 hive:
   sources: 
     mysql:
+      image: mysql
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["li_source","s_source"]
+      ports: ["3306:3306"]
+      volumes:
+        - ./mysql/import:/import
+        - mysqlvolume1:/var/lib/mysql
     postgress:
+      image: postgresdb
       url: jdbc:url
       user: username
       password: pwd
       jar-location: url
       tables: ["n_source","r_source","s_source"]
+      ports: ["35432:5432"]
+      volumes:
+        - ./mysql/import:/import
+        - postgress1:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1

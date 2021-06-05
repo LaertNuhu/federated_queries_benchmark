@@ -2,3 +2,4 @@
 metaRepo/metaRepo/code
 benchmark/.*
 env
+.vscode/

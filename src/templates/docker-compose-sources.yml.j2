@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+    {%- for key,value in sources.items() %}
+    {%- if "postgress" in key -%}
+        {% set source_ini = "POSTGRESS" %}
+    {%- elif "mysql" in key -%}
+        {% set source_ini = "MYSQL" %}
+        {% set ROOT_PWD = "mysql" %}
+    {% endif -%}
+    {{key}}:
+        image: {{value.image}}
+        container_name: {{key}}
+        restart: always
+        enviorment:
+            {{source_ini}}_USER: {{value.user}}
+            {{source_ini}}_PASSWORD: {{value.password}}
+            {%- if "mysql" in key %}
+            {{source_ini}}_ROOT_PASSWORD: {{ROOT_PWD}}
+            {%- endif %}
+        volumes:
+            {%- for volume in value.volumes %}
+            - {{volume}}
+            {%- endfor %}
+        ports:
+        {%- for port in value.ports %}
+            - {{port}}
+        {% endfor %}
+    {% endfor %}
+
+volumes:
+{%- for key,source in sources.items() %}
+    {{key}}:
+{%- endfor %}

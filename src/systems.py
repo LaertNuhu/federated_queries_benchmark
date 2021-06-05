@@ -20,10 +20,13 @@ class Presto(System):
         if show:
             return result
 
+    def create_catalog(self):
+        pass
+
 
 class Drill(System, PyDrill):
-    def __init__(self, **kwargs):
-        PyDrill.__init__(self, **kwargs)
+    def __init__(self, host="drill", port=8047):
+        PyDrill.__init__(self, host="drill", port=8047)
 
     def run_query(self, sql, timeout=100000, show=False):
         if show:
