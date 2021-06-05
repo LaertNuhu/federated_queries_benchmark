@@ -59,7 +59,7 @@ class Configurator:
 
     def render_queries(self, scale, sources):
         to_benchmark = self.get_benchmark_queries()
-        templator = Templator(queries_path="./benchmark/queries", selected=to_benchmark)
+        templator = Templator(queries_path="./queries", selected=to_benchmark)
         sources_config = self.mapper.map_tables_to_sources(scale=scale, **sources)
         return templator.render_queries(sources_config)
 

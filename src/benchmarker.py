@@ -32,6 +32,9 @@ class Benchmarker:
             end = time.time()
             return str(end - start)
         except Exception as e:
+            Path("./benchmark/error/errors.log").parent.mkdir(
+                parents=True, exist_ok=True
+            )
             log = Path("./benchmark/error/errors.log").open("a")
             log.write(str(e))
             log.write("\n")
@@ -39,6 +42,9 @@ class Benchmarker:
 
     def __create_results_file(self, system):
         """Creates results csv file"""
+        Path(f"./benchmark/results/{system}.csv").parent.mkdir(
+            parents=True, exist_ok=True
+        )
         return Path(f"./benchmark/results/{system}.csv").open("a")
 
     def __iterate_systems(self, callback):
@@ -96,7 +102,7 @@ class Benchmarker:
                 f.write(benchmark_result)
                 f.flush()
             f.write("\n")
-            time.sleep(10)
+            # time.sleep(10)
 
     def run_benchmarks(self, iterations=None):
         self.__iterate_systems(
@@ -108,5 +114,5 @@ class Benchmarker:
 
 
 if __name__ == "__main__":
-    benchmarker = Benchmarker("Drill")
+    benchmarker = Benchmarker("Presto")
     benchmarker.run_benchmarks(5)
