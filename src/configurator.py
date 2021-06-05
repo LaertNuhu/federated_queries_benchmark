@@ -94,13 +94,7 @@ class Configurator:
     def get_rendered_sources(self):
         templator = Templator()
         if self.system == "all":
-            templator.render_sources_template(config=self.parsed_config)
-        else:
-            templator.render_sources_template(
-                system=self.system, config=self.get_config()
-            )
-
-
-if __name__ == "__main__":
-    config = Configurator()
-    config.get_rendered_sources()
+            return templator.render_sources_template(config=self.parsed_config)
+        return templator.render_sources_template(
+            system=self.system, config=self.get_config()
+        )

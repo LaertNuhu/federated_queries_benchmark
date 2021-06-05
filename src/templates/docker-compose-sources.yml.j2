@@ -12,7 +12,7 @@ services:
         image: {{value.image}}
         container_name: {{key}}
         restart: always
-        enviorment:
+        environment:
             {{source_ini}}_USER: {{value.user}}
             {{source_ini}}_PASSWORD: {{value.password}}
             {%- if "mysql" in key %}

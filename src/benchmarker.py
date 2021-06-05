@@ -3,6 +3,7 @@ import sys
 import time
 import pandas as pd
 from configurator import Configurator
+from docker_operator import DockerOperator
 from pathlib import Path
 import random
 
@@ -11,6 +12,7 @@ class Benchmarker:
     def __init__(self, system="all"):
         self.configurator = Configurator(system=system)
         self.queries = self.configurator.get_queries()
+        self.operator = DockerOperator()
 
     def __sort_human(self, l):
         """Sorts a list of strings correctly."""
@@ -42,8 +44,17 @@ class Benchmarker:
     def __iterate_systems(self, callback):
         """Execute a callback function for every system."""
         systems = list(self.queries.keys())
-        for system in systems:
+        resources = self.configurator.get_rendered_sources()
+        zip_list = list(zip(systems, resources))
+        for system, resource in zip_list:
+            # start resources
+            print(f"starting resources for {system}")
+            self.operator.start_resource(resource)
+            # do smth with the resources
             callback(system)
+            # stop resources
+            print(f"deleting resources for {system}")
+            self.operator.stop_resource(resource)
 
     def __iterate_scale_factors(self, system, callback):
         """Execute a callback function for every scale factor"""
@@ -74,7 +85,7 @@ class Benchmarker:
         queries = self.queries[system][scaleFactor]
         queries_ids = [key for key in queries.keys()]
         reordered_queries_ids = self.__sort_human(queries_ids)
-        for _ in range(iterations) + 1:
+        for _ in range(iterations + 1):
             f.write(scaleFactor)
             f.flush()
             for query_id in reordered_queries_ids:
@@ -90,3 +101,8 @@ class Benchmarker:
                 system, lambda sf: self.__run_query_and_save_results(system, sf)
             )
         )
+
+
+if __name__ == "__main__":
+    benchmarker = Benchmarker("Presto")
+    benchmarker.run_benchmarks()

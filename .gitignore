@@ -3,3 +3,4 @@ metaRepo/metaRepo/code
 benchmark/.*
 env
 .vscode/
+src/compose_files

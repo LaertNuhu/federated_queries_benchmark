@@ -20,12 +20,18 @@ class Templator:
 
     def render_sources_template(self, config, system=None):
         sources_config_yml = Path("./src/templates/docker-compose-sources.yml.j2")
+        results = []
         if "sources" in config:
             result = jinja2.Template(sources_config_yml.read_text()).render(**config)
-            Path(f"docker-compose-{system}.yml").write_text(result)
+            Path(f"./src/compose_files/docker-compose-{system}.yml").write_text(result)
+            results.append(Path(f"./src/compose_files/docker-compose-{system}.yml"))
         else:
             for system in config:
                 result = jinja2.Template(sources_config_yml.read_text()).render(
                     **config[system]
                 )
-                Path(f"docker-compose-{system}.yml").write_text(result)
+                Path(f"./src/compose_files/docker-compose-{system}.yml").write_text(
+                    result
+                )
+                results.append(Path(f"./src/compose_files/docker-compose-{system}.yml"))
+        return results
