@@ -19,6 +19,7 @@ services:
             {{source_ini}}_ROOT_PASSWORD: {{ROOT_PWD}}
             {%- endif %}
         volumes:
+            - test-data:/data
             {%- for volume in value.volumes %}
             - {{volume}}
             {%- endfor %}
@@ -29,6 +30,8 @@ services:
     {% endfor %}
 
 volumes:
+    test-data:
+        external: true
 {%- for key,source in sources.items() %}
     {{key}}:
 {%- endfor %}
