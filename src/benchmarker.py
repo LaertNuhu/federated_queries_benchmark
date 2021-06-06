@@ -4,7 +4,7 @@ import time
 import pandas as pd
 from configurator import Configurator
 from docker_operator import DockerOperator
-from data_generator import TestDataGenerator
+from data_generator import TestDataGenerator, DataIntegrator
 from pathlib import Path
 import random
 
@@ -16,6 +16,7 @@ class Benchmarker:
         self.operator = DockerOperator()
         self.test_data_generator = TestDataGenerator(self.operator)
         self.test_data_generator.create_test_data()
+        self.intergrator = DataIntegrator(self.operator, self.configurator)
 
     def __sort_human(self, l):
         """Sorts a list of strings correctly."""
@@ -58,9 +59,11 @@ class Benchmarker:
         for system, resource in zip_list:
             # start resources
             print(
-                f"starting resources for {system}. Configuration is on {resource.name}"
+                f"starting resources for {system}. "
+                f"Configuration is on {resource.name}"
             )
             self.operator.start_resource(resource)
+            self.intergrator.integrate(system)
             # do smth with the resources
             callback(system)
             # stop resources
@@ -91,7 +94,7 @@ class Benchmarker:
         """Executes public function."""
         self.__iterate_systems(lambda system: self.__construct_header(system))
 
-    def __run_query_and_save_results(self, system, scaleFactor, iterations=1):
+    def __run_query_and_save_results(self, system, scaleFactor, iterations):
         f = self.__create_results_file(system)
         queries = self.queries[system][scaleFactor]
         queries_ids = [key for key in queries.keys()]
@@ -107,7 +110,7 @@ class Benchmarker:
             f.write("\n")
             # time.sleep(10)
 
-    def run_benchmarks(self, iterations=None):
+    def run_benchmarks(self, iterations=2):
         self.__iterate_systems(
             lambda system: self.__iterate_scale_factors(
                 system,

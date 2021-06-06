@@ -1,4 +1,5 @@
 import time
+from configurator import Configurator
 
 
 class TestDataGenerator:
@@ -28,8 +29,24 @@ class TestDataGenerator:
 
 
 class DataIntegrator:
-    def __init__(self, operator) -> None:
+    def __init__(self, operator, configurator) -> None:
         self.operator = operator
+        self.config = configurator.parsed_config
+
+    def __handle_mysql():
+        pass
+
+    def __handle_posgress():
+        pass
+
+    def __handle_mariadb():
+        pass
 
     def integrate(self, system):
-        pass
+        print("Waiting until sources are setup.")
+        time.sleep(10)
+        for source in self.config[system]["sources"]:
+            print(f"Creating databases for {system} for source: {source}")
+            self.operator.execute(
+                f"exec {source} /bin/sh -c 'cd / && /bin/bash ./import_tpch_sf1.sh'"
+            )
