@@ -3,8 +3,8 @@ presto:
     mysql1:
       image: mysql
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["orders","supplier"]
       ports: ["3306:3306"]
@@ -14,122 +14,122 @@ presto:
     mysql2:
       image: mysql
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["partsupp"]
       ports: ["4306:3306"]
       volumes:
         - ./mysql/import:/import
         - mysql2:/var/lib/mysql
-    postgress:
+    postgress1:
       image: postgresdb
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url
       tables: ["lineitem"]
       ports: ["15432:5432"]
       volumes:
         - postgress1:/var/lib/postgresql/
-    postgress1:
+    postgress2:
       image: postgresdb
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url
       tables: ["part","region"]
       ports: ["25432:5432"]
       volumes:
-        - postgress1:/var/lib/postgresql/
-    postgress2:
+        - postgress2:/var/lib/postgresql/
+    postgress3:
       image: postgresdb
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url
       tables: ["customer","nation"]
       ports: ["35432:5432"]
       volumes:
-        - postgress2:/var/lib/postgresql/
+        - postgress3:/var/lib/postgresql/
   queries: ["q1:q11","d1","d3"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: [sf1,sf10]
 drill:
   sources: 
-    mysql:
+    mysql1:
       image: mysql
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["lineitem","supplier"]
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
-        - mysql:/var/lib/mysql
-    postgress:
+        - mysql1:/var/lib/mysql
+    postgress1:
       image: postgresdb
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url
       tables: ["nation","region","supplier"]
       ports: ["35432:5432"]
       volumes:
-        - postgress:/var/lib/postgresql/
+        - postgress1:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1
 spark:
   sources: 
-    mysql:
+    mysql1:
       image: mysql
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["lineitem","supplier"]
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
-        - mysql:/var/lib/mysql
-    postgress:
+        - mysql1:/var/lib/mysql
+    postgress1:
       image: postgresdb
       url: jdbc:url
-      user: username
-      password: pwd
+      user: benchmark
+      password: secret123
       jar-location: url
       tables: ["nation","region","supplier"]
       ports: ["35432:5432"]
       volumes:
-        - postgress:/var/lib/postgresql/
+        - postgress1:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1
 hive:
   sources: 
-    mysql:
+    mysql1:
       image: mysql
       url: jdbc:url
-      user: username
+      user: benchmark
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["lineitem","supplier"]
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
-        - mysql:/var/lib/mysql
-    postgress:
+        - mysql1:/var/lib/mysql
+    postgress1:
       image: postgresdb
       url: jdbc:url
-      user: username
+      user: benchmark
       password: pwd
       jar-location: url
       tables: ["nation","region","supplier"]
       ports: ["35432:5432"]
       volumes:
-        - postgress:/var/lib/postgresql/
+        - postgress1:/var/lib/postgresql/
   queries: ["q1","q2"] # or ["q1:q7"]
   metrics: ["processing time", "rows/sec"]
   scale_factors: sf1
