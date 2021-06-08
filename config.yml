@@ -6,7 +6,7 @@ presto:
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["o_source","s_source"]
+      tables: ["orders","supplier"]
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
@@ -17,7 +17,7 @@ presto:
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["ps_source"]
+      tables: ["partsupp"]
       ports: ["4306:3306"]
       volumes:
         - ./mysql/import:/import
@@ -28,7 +28,7 @@ presto:
       user: username
       password: pwd
       jar-location: url
-      tables: ["li_source"]
+      tables: ["lineitem"]
       ports: ["15432:5432"]
       volumes:
         - postgress1:/var/lib/postgresql/
@@ -38,7 +38,7 @@ presto:
       user: username
       password: pwd
       jar-location: url
-      tables: ["pa_source","r_source"]
+      tables: ["part","region"]
       ports: ["25432:5432"]
       volumes:
         - postgress1:/var/lib/postgresql/
@@ -48,7 +48,7 @@ presto:
       user: username
       password: pwd
       jar-location: url
-      tables: ["c_source","n_source"]
+      tables: ["customer","nation"]
       ports: ["35432:5432"]
       volumes:
         - postgress2:/var/lib/postgresql/
@@ -63,7 +63,7 @@ drill:
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["li_source","s_source"]
+      tables: ["lineitem","supplier"]
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
@@ -74,7 +74,7 @@ drill:
       user: username
       password: pwd
       jar-location: url
-      tables: ["n_source","r_source","s_source"]
+      tables: ["nation","region","supplier"]
       ports: ["35432:5432"]
       volumes:
         - postgress:/var/lib/postgresql/
@@ -89,7 +89,7 @@ spark:
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["li_source","s_source"]
+      tables: ["lineitem","supplier"]
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
@@ -100,7 +100,7 @@ spark:
       user: username
       password: pwd
       jar-location: url
-      tables: ["n_source","r_source","s_source"]
+      tables: ["nation","region","supplier"]
       ports: ["35432:5432"]
       volumes:
         - postgress:/var/lib/postgresql/
@@ -115,7 +115,7 @@ hive:
       user: username
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["li_source","s_source"]
+      tables: ["lineitem","supplier"]
       ports: ["3306:3306"]
       volumes:
         - ./mysql/import:/import
@@ -126,7 +126,7 @@ hive:
       user: username
       password: pwd
       jar-location: url
-      tables: ["n_source","r_source","s_source"]
+      tables: ["nation","region","supplier"]
       ports: ["35432:5432"]
       volumes:
         - postgress:/var/lib/postgresql/
