@@ -1,5 +1,5 @@
 class Mapper:
-    def map_tables_torderss(self, scale, **kwargs):
+    def map_tables_to_sources(self, scale, **kwargs):
         """Returns a dict with tabels maped to sources"""
         result = {}
         missing_tables = []
