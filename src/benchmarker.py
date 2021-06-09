@@ -57,18 +57,12 @@ class Benchmarker:
         resources = self.configurator.get_rendered_sources()
         zip_list = list(zip(systems, resources))
         for system, resource in zip_list:
-            # start resources
-            print(
-                f"starting resources for {system}. "
-                f"Configuration is on {resource.name}"
-            )
-            self.operator.start_resource(resource)
-            self.intergrator.integrate(system)
+            self.intergrator.integrate(system, resource)
             # do smth with the resources
-            callback(system)
+            # callback(system)
             # stop resources
-            print(f"deleting resources for {system}")
-            self.operator.stop_resource(resource)
+            # print(f"deleting resources for {system}")
+            # self.operator.stop_resource(resource)
 
     def __iterate_scale_factors(self, system, callback):
         """Execute a callback function for every scale factor"""
