@@ -29,6 +29,49 @@ services:
         {% endfor %}
     {% endfor %}
 
+    {%- if "presto" in system%}
+    {{system}}:
+        image: presto
+        container_name: {{system}}
+        hostname: presto
+        restart: allways
+        links: 
+        {%- for source in sources %}
+            - {{source}}
+        {%- endfor %}
+        depends_on:
+        {%- for source in sources %}
+            - {{source}}
+        {%- endfor %}
+        ports:
+            - 8080:8080
+    {%- endif %}
+
+    {% if "drill" in system%}
+    {{system}}:
+        image: drill
+        container_name: {{system}}
+        hostname: drill
+        tty: true
+        restart: allways
+        environment:
+            HEAP_MEMORY_FRACTION: 2
+        links: 
+        {%- for source in sources %}
+            - {{source}}
+        {%- endfor%}
+        depends_on:
+        {%- for source in sources %}
+            - {{source}}
+        {%- endfor%}
+        expose:
+            - 31010
+            - 31011
+            - 31012
+        ports:
+            - 8080:8047
+    {% endif %}
+
 volumes:
     test-data:
         external: true
