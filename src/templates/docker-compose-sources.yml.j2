@@ -3,7 +3,7 @@ version: "3.7"
 services:
     {%- for key,value in sources.items() %}
     {%- if "postgress" in key -%}
-        {% set source_ini = "POSTGRESS" %}
+        {% set source_ini = "POSTGRES" %}
     {%- elif "mysql" in key -%}
         {% set source_ini = "MYSQL" %}
         {% set ROOT_PWD = "mysql" %}
@@ -13,10 +13,10 @@ services:
         container_name: {{key}}
         restart: always
         environment:
-            {{source_ini}}_USER: {{value.user}}
-            {{source_ini}}_PASSWORD: {{value.password}}
+            - {{source_ini}}_USER={{value.user}}
+            - {{source_ini}}_PASSWORD={{value.password}}
             {%- if "mysql" in key %}
-            {{source_ini}}_ROOT_PASSWORD: {{ROOT_PWD}}
+            - {{source_ini}}_ROOT_PASSWORD={{ROOT_PWD}}
             {%- endif %}
         volumes:
             - test-data:/data
@@ -31,7 +31,7 @@ services:
 
     {%- if "presto" in system%}
     {{system}}:
-        image: presto
+        image: superpresto
         container_name: {{system}}
         hostname: presto
         restart: always
