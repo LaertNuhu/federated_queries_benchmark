@@ -43,3 +43,16 @@ class Templator:
                 )
                 results.append(Path(f"./src/compose_files/docker-compose-{system}.yml"))
         return results
+
+    def render_catalog_template(self, sources):
+        """Creates catalogs for mysql and posgres"""
+        sources_config_yml = Path("./src/templates/catalog.properties.j2")
+        for source in sources:
+            print(source)
+            result = jinja2.Template(sources_config_yml.read_text()).render(
+                **sources[source], key=source
+            )
+            Path(f"./catalog/{source}.properties").parent.mkdir(
+                parents=True, exist_ok=True
+            )
+            Path(f"./catalog/{source}.properties").write_text(result)
