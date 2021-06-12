@@ -34,7 +34,7 @@ services:
         image: presto
         container_name: {{system}}
         hostname: presto
-        restart: allways
+        restart: always
         links: 
         {%- for source in sources %}
             - {{source}}
@@ -53,7 +53,7 @@ services:
         container_name: {{system}}
         hostname: drill
         tty: true
-        restart: allways
+        restart: always
         environment:
             HEAP_MEMORY_FRACTION: 2
         links: 
@@ -78,3 +78,7 @@ volumes:
 {%- for key,source in sources.items() %}
     {{key}}:
 {%- endfor %}
+
+networks:
+  default:
+    name: polydb-net
