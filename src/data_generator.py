@@ -47,6 +47,13 @@ class DataIntegrator:
         time.sleep(10)
         for source in self.config[system]["sources"]:
             print(f"Creating databases for {system} for source: {source}")
-            self.operator.execute(
-                f"exec {source} /bin/sh -c 'cd / && /bin/bash ./import_tpch_sf1.sh'"
-            )
+            if "postgress" in source:
+                self.operator.execute(
+                    f"exec {source} /bin/sh -c 'cd / && /bin/bash ./import_tpch_sf1.sh'"
+                )
+            elif "mysql" in source:
+                self.operator.execute(
+                    f"exec {source} /bin/sh -c 'cd / && /bin/bash ./import_tpch_sf1.sh'"
+                )
+            else:
+                print("Yeah nahh source not supported yet. Sorry!")
