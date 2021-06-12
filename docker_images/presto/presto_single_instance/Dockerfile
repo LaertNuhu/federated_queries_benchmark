@@ -29,7 +29,6 @@ RUN mkdir etc
 ADD etc/jvm.config etc/
 ADD etc/config.properties etc/
 ADD etc/node.properties etc/
-ADD etc/catalog etc/catalog
 
 # Download Presto CLI
 RUN mkdir -p bin

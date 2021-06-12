@@ -23,7 +23,7 @@ presto:
         - ./mysql/import:/import
         - mysql2:/var/lib/mysql
     postgress1:
-      image: postgresdb
+      image: fedbench/postgresdb
       url: jdbc:url
       user: benchmark
       password: secret123
@@ -33,7 +33,7 @@ presto:
       volumes:
         - postgress1:/var/lib/postgresql/
     postgress2:
-      image: postgresdb
+      image: fedbench/postgresdb
       url: jdbc:url
       user: benchmark
       password: secret123
@@ -43,7 +43,7 @@ presto:
       volumes:
         - postgress2:/var/lib/postgresql/
     postgress3:
-      image: postgresdb
+      image: fedbench/postgresdb
       url: jdbc:url
       user: benchmark
       password: secret123
@@ -52,9 +52,9 @@ presto:
       ports: ["35432:5432"]
       volumes:
         - postgress3:/var/lib/postgresql/
-  queries: ["q1:q11","d1","d3"]
+  queries: ["q1"]
   metrics: ["processing time", "rows/sec"]
-  scale_factors: [sf1,sf10]
+  scale_factors: [sf1]
 drill:
   sources: 
     mysql1:
@@ -69,7 +69,7 @@ drill:
         - ./mysql/import:/import
         - mysql1:/var/lib/mysql
     postgress1:
-      image: postgresdb
+      image: fedbench/postgresdb
       url: jdbc:url
       user: benchmark
       password: secret123
@@ -95,7 +95,7 @@ spark:
         - ./mysql/import:/import
         - mysql1:/var/lib/mysql
     postgress1:
-      image: postgresdb
+      image: fedbench/postgresdb
       url: jdbc:url
       user: benchmark
       password: secret123
@@ -121,7 +121,7 @@ hive:
         - ./mysql/import:/import
         - mysql1:/var/lib/mysql
     postgress1:
-      image: postgresdb
+      image: fedbench/postgresdb
       url: jdbc:url
       user: benchmark
       password: pwd
