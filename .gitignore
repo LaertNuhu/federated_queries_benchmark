@@ -4,3 +4,4 @@ benchmark/.*
 env
 .vscode/
 src/compose_files
+__pycache__
