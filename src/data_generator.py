@@ -3,6 +3,7 @@ import json
 import time
 from pathlib import Path
 from configurator import Configurator
+from templator import Templator
 
 
 class TestDataGenerator:
@@ -35,7 +36,7 @@ class DataIntegrator:
     def __init__(self, operator, configurator) -> None:
         self.operator = operator
         self.config = configurator.parsed_config
-        self.tables_schema = json.load(Path("./src/table_schema/tables.json").open())
+        self.templator = Templator()
         self.handler = {
             "mysql": self.__handle_mysql,
             "postgress": self.__handle_postgress,
@@ -53,46 +54,16 @@ class DataIntegrator:
             ) if system in result else volumes_already_exist.append(False)
         return all(volumes_already_exist)
 
-    def __create_table(self, source_root, sf, table):
-        columns = "("
-        for key, value in self.tables_schema[table].items():
-            columns = columns + f" {key} {value},"
-        columns = columns[:-1] + ");"
-        return f"CREATE TABLE {source_root}_{sf}_{table} {columns}"
+    def __handle_mysql(self, system, source):
+        template = self.templator.render_mysql_template(self.config[system], source)
+        self.operator.execute(f"cp {template} {source}:/{template.name}")
+        self.operator.execute(f"exec {source} /bin/bash -c 'chmod +x {template.name}'")
 
-    def __handle_mysql(self, key, system, source_root, tables):
-        # setting up premissions #TODO: username and password are fixed
-        grant_privileges = f"echo \"GRANT ALL PRIVILEGES ON *.* TO 'benchmark'@'\%';\" | mysql -u root --password=mysql"
-        print(grant_privileges)
-        self.operator.execute(f"exec {key} /bin/sh -c '{grant_privileges}'")
-        # # print(grant_privileges)
-        # # SET GLOBAL local_infile=1;
-        # global_local = (
-        #     f'echo "SET GLOBAL local_infile=1;" | mysql -u root --password=mysql'
-        # )
-        # # print(global_local)
-        # self.operator.execute(f"exec {key} /bin/sh -c '{global_local}'")
-        # # Add public database -> if it exists nobody cares
-        # create_database = 'echo "create database public;" | mysql --local-infile=1 -u benchmark --password=secret123'
-        # print(create_database)
-        # self.operator.execute(f"exec {key} /bin/sh -c '{create_database}'")
-        # table creation and import
-        # scale_factors = self.config[system]["scale_factors"]
-        # for sf in scale_factors:
-        #     print("Creating table for ", sf)
-        #     for table in tables:
-        #         create_table = f'echo "{self.__create_table(source_root, sf, table)}" | mysql public -u benchmark --password=secret123'
-        #         print(create_table)
-        #         self.operator.execute(f"exec {key} /bin/sh -c '{create_table}'")
-        #         import_table = f"echo \"LOAD DATA LOCAL INFILE '/data/{sf}/{table}.tbl' into table {source_root}_{sf}_{table} FIELDS TERMINATED BY '|';\" | mysql public -u benchmark --password=secret123"
-        #         # print(import_table)
-        #         self.operator.execute(f"exec {key} /bin/sh -c '{import_table}'")
-
-    def __handle_postgress(self, system, tables):
-        print("postgress here")
+    def __handle_postgress(self, system, source):
+        print("Not there yet")
         pass
 
-    def __handle_mariadb(self, system, tables):
+    def __handle_mariadb(self, system, source):
         print("mariadb here")
         pass
 
@@ -100,22 +71,17 @@ class DataIntegrator:
         return " ".join(re.findall("[a-zA-Z]+", string))
 
     def integrate(self, system, resource):
-        # print(
-        #     f"starting resources for {system}. "
-        #     f"Configuration is located on {resource.name}"
-        # )
-        # if self.__check_docker_volume_existence(system):
-        #     self.operator.start_resource(resource)
-        # else:
-        #     self.operator.start_resource(resource)
-        #     print("Waiting until sources are setup.")
-        #     time.sleep(15)
-        for key, value in self.config[system]["sources"].items():
-            # print(f"Creating databases for {system} for source: {key}")
-            tables = value["tables"]
-            source_root = self.__get_alpha_char(key)
-            # self.handler[source_root](system, source_root,tables)
-            self.__handle_mysql(key, system, source_root, tables)
-            # self.operator.execute(
-            #     f"exec {key} /bin/sh -c 'cd / && /bin/bash ./import_tpch_sf1.sh'"
-            # )
+        print(
+            f"starting resources for {system}. "
+            f"Configuration is located on {resource.name}"
+        )
+        if self.__check_docker_volume_existence(system):
+            self.operator.start_resource(resource)
+        else:
+            self.operator.start_resource(resource)
+            print("Waiting until sources are setup.")
+            time.sleep(15)
+        for source in self.config[system]["sources"]:
+            print(f"Creating databases for {system} for source: {source}")
+            source_root = self.__get_alpha_char(source)
+            self.handler[source_root](system, source)
