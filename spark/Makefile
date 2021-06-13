@@ -1,4 +1,4 @@
 build:
-	docker build -t myspark-base ./base
-	docker build -t myspark-master ./master
-	docker build -t myspark-worker ./worker
+	docker build -t spark-base ./base
+	docker build -t spark-master ./master
+	docker build -t spark-worker ./worker

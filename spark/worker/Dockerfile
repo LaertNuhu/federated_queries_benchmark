@@ -1,4 +1,4 @@
-FROM myspark-base
+FROM spark-base
 
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh

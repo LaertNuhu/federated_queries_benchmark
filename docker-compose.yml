@@ -157,110 +157,110 @@ services:
     ports:
       - 15432:5432
 
-  postgres-2:
-    image: postgresdb
-    container_name: pg-2
-    restart: always
-    volumes:
-      - test-data:/data
-      - pgvolume2:/var/lib/postgresql/
-    ports:
-      - 25432:5432
+  # postgres-2:
+  #   image: postgresdb
+  #   container_name: pg-2
+  #   restart: always
+  #   volumes:
+  #     - test-data:/data
+  #     - pgvolume2:/var/lib/postgresql/
+  #   ports:
+  #     - 25432:5432
 
-  postgres-3:
-    image: postgresdb
-    container_name: pg-3
-    restart: always
-    volumes:
-      - test-data:/data
-      - pgvolume3:/var/lib/postgresql/
-    ports:
-      - 35432:5432
+  # postgres-3:
+  #   image: postgresdb
+  #   container_name: pg-3
+  #   restart: always
+  #   volumes:
+  #     - test-data:/data
+  #     - pgvolume3:/var/lib/postgresql/
+  #   ports:
+  #     - 35432:5432
 
-  postgres-4:
-    image: postgresdb
-    container_name: pg-4
-    restart: always
-    volumes:
-      - test-data:/data
-      - pgvolume4:/var/lib/postgresql/
-    ports:
-      - 45432:5432
+  # postgres-4:
+  #   image: postgresdb
+  #   container_name: pg-4
+  #   restart: always
+  #   volumes:
+  #     - test-data:/data
+  #     - pgvolume4:/var/lib/postgresql/
+  #   ports:
+  #     - 45432:5432
 
-  mysql:
-    image: mysql
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: 'mysql'
-      MYSQL_USER: 'presto'
-      MYSQL_PASSWORD: 'mysql'
-    ports:
-      - "3306:3306"
-    volumes:
-      - test-data:/data
-      - ./mysql/import:/import
-      - mysqlvolume1:/var/lib/mysql
+  # mysql:
+  #   image: mysql
+  #   container_name: mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: 'mysql'
+  #     MYSQL_USER: 'presto'
+  #     MYSQL_PASSWORD: 'mysql'
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - test-data:/data
+  #     - ./mysql/import:/import
+  #     - mysqlvolume1:/var/lib/mysql
 
-  mysql1:
-    image: mysql
-    container_name: mysql1
-    environment:
-      MYSQL_ROOT_PASSWORD: 'mysql'
-      MYSQL_USER: 'presto'
-      MYSQL_PASSWORD: 'mysql'
-    ports:
-      - "4306:3306"
-    volumes:
-      - test-data:/data
-      - ./mysql/import:/import
-      - mysqlvolume2:/var/lib/mysql
+  # mysql1:
+  #   image: mysql
+  #   container_name: mysql1
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: 'mysql'
+  #     MYSQL_USER: 'presto'
+  #     MYSQL_PASSWORD: 'mysql'
+  #   ports:
+  #     - "4306:3306"
+  #   volumes:
+  #     - test-data:/data
+  #     - ./mysql/import:/import
+  #     - mysqlvolume2:/var/lib/mysql
 
-  mongodb:
-    image: mongo
-    container_name: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - test-data:/data
+  # mongodb:
+  #   image: mongo
+  #   container_name: mongo
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - test-data:/data
 
-  mariadb-1:
-    image: mymaria
-    container_name: mdb1
-    restart: always
-    volumes:
-      - test-data:/data
-      - mvolume:/var/lib/mysql
-    ports:
-      - 13306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=mdb
-      - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=123456
+  # mariadb-1:
+  #   image: mymaria
+  #   container_name: mdb1
+  #   restart: always
+  #   volumes:
+  #     - test-data:/data
+  #     - mvolume:/var/lib/mysql
+  #   ports:
+  #     - 13306:3306
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=123456
+  #     - MYSQL_DATABASE=mdb
+  #     - MYSQL_USER=mariadb
+  #     - MYSQL_PASSWORD=123456
 
 
-  presto:
-    image: presto
-    container_name: presto
-    restart: always
-    links:
-      - postgres-1
-      - postgres-2
-      - postgres-3
-      - postgres-4
-      - mariadb-1
-      - mongodb
-      - mysql
-    depends_on:
-      - postgres-1
-      - postgres-2
-      - postgres-3
-      - postgres-4
-      - mariadb-1
-      - mongodb
-      - mysql
-    ports: 
-      - 8080:8080
+  # presto:
+  #   image: presto
+  #   container_name: presto
+  #   restart: always
+  #   links:
+  #     - postgres-1
+  #     - postgres-2
+  #     - postgres-3
+  #     - postgres-4
+  #     - mariadb-1
+  #     - mongodb
+  #     - mysql
+  #   depends_on:
+  #     - postgres-1
+  #     - postgres-2
+  #     - postgres-3
+  #     - postgres-4
+  #     - mariadb-1
+  #     - mongodb
+  #     - mysql
+  #   ports: 
+  #     - 8080:8080
 
   # zookeeper:
   #   image: zookeeper:3.7.0
@@ -272,40 +272,38 @@ services:
   #     ZOOKEEPER_CLIENT_PORT: 2181
   #     ZOOKEEPER_TICK_TIME: 2000
 
-  drill:
-    image: drill
-    restart: always
-    tty: true
-    container_name: drill
-    hostname: drill
-    environment:
-      HEAP_MEMORY_FRACTION: 2
-      # LOG_LEVEL: INFO
-      # CLUSTERED_MODE: 'true'
-    # volumes:
-    #   - ./drill/drill-override.conf:/opt/drill/conf/drill-override.conf
-    expose:
-      - 31010
-      - 31011
-      - 31012
-    links:
-      - postgres-1
-      - postgres-2
-      - postgres-3
-      - postgres-4
-      - mariadb-1
-      - mongodb
-      - mysql
-    depends_on:
-      - postgres-1
-      - postgres-2
-      - postgres-3
-      - postgres-4
-      - mariadb-1
-      - mongodb
-      - mysql
-    ports: 
-      - 8047:8047
+  # drill:
+  #   image: drill
+  #   restart: always
+  #   tty: true
+  #   container_name: drill
+  #   hostname: drill
+  #   environment:
+  #     HEAP_MEMORY_FRACTION: 1
+  #     # LOG_LEVEL: INFO
+  #     # CLUSTERED_MODE: 'true'
+  #   # volumes:
+  #   #   - ./drill/drill-override.conf:/opt/drill/conf/drill-override.conf
+  #   expose:
+  #     - 31010
+  #     - 31011
+  #     - 31012
+  #   links:
+  #     - postgres-1
+  #     - postgres-2
+  #     - postgres-3
+  #     - postgres-4
+  #     - mysql
+  #     - mysql1
+  #   depends_on:
+  #     - postgres-1
+  #     - postgres-2
+  #     - postgres-3
+  #     - postgres-4
+  #     - mysql
+  #     - mysql1
+  #   ports: 
+  #     - 8047:8047
     # cap_add:
     #   - SYS_PTRACE
 
@@ -355,16 +353,15 @@ services:
       - postgres-2
       - postgres-3
       - postgres-4
-      - mariadb-1
-      - mongodb
       - mysql
+      - mysql1
     ports: 
       - "8888:8888"
     volumes:
       - ./benchmark/:/home/jovyan/
     depends_on:
       - drill
-      - presto
+      # - presto
     command: start-notebook.sh --NotebookApp.password='sha1:2017f6d8a65d:4f2115202d4cd8c081f1c135bc2b41292bcb4ec4'
 
   # polydb:
