@@ -33,22 +33,22 @@ class Benchmarker:
 
     def benchmark(self, system, query):
         """Runs query based on a system"""
-        # try:
-        start = time.time()
-        under_test_system = self.__str_to_class(system.capitalize())()
-        print(query)
-        under_test_system.run_query(query)
-        time.sleep(random.random() * 2)
-        end = time.time()
-        return str(end - start)
-        # except Exception as e:
-        #     Path("./benchmark/error/errors.log").parent.mkdir(
-        #         parents=True, exist_ok=True
-        #     )
-        #     log = Path("./benchmark/error/errors.log").open("a")
-        #     log.write(str(e))
-        #     log.write("\n")
-        #     return "0"
+        try:
+            start = time.time()
+            under_test_system = self.__str_to_class(system.capitalize())()
+            print(query)
+            under_test_system.run_query(query)
+            time.sleep(random.random() * 2)
+            end = time.time()
+            return str(end - start)
+        except Exception as e:
+            Path("./benchmark/error/errors.log").parent.mkdir(
+                parents=True, exist_ok=True
+            )
+            log = Path("./benchmark/error/errors.log").open("a")
+            log.write(str(e))
+            log.write("\n")
+            return "0"
 
     def __create_results_file(self, system):
         """Creates results csv file"""
@@ -70,12 +70,11 @@ class Benchmarker:
             )
             under_test_system = self.__str_to_class(system.capitalize())
             under_test_system().setup()
-            self.operator.start_resource(resource)
+            self.intergrator.integrate(system, resource)
             under_test_system().post_startup()
-            self.intergrator.integrate(system)
             # do smth with the resources
             callback(system)
-            # # stop resources
+            # stop resources
             print(f"deleting resources for {system}")
             self.operator.stop_resource(resource)
 

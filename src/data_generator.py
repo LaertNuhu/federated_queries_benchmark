@@ -1,5 +1,9 @@
+import re
+import json
 import time
+from pathlib import Path
 from configurator import Configurator
+from templator import Templator
 
 
 class TestDataGenerator:
@@ -32,24 +36,47 @@ class DataIntegrator:
     def __init__(self, operator, configurator) -> None:
         self.operator = operator
         self.config = configurator.parsed_config
+        self.templator = Templator()
+        self.handler = {
+            "mysql": self.__handle_mysql,
+            "postgress": self.__handle_postgress,
+            "mariadb": self.__handle_mariadb,
+        }
 
-    def __handle_mysql():
+    def __volume_exists(self, source):
+        result = self.operator.execute(f"volume ls | grep '{source}'").decode("utf-8")
+        return True if source in result else False
+
+    def __handle_mysql(self, system, source):
+        template = self.templator.render_mysql_template(self.config[system], source)
+        self.operator.execute(f"cp {template} {source}:/{template.name}")
+        self.operator.execute(f"exec {source} /bin/bash -c 'chmod +x /{template.name}'")
+        self.operator.execute(f"exec {source} /bin/bash -c /{template.name}")
+
+    def __handle_postgress(self, system, source):
+        template = self.templator.render_postgres_template(self.config[system], source)
+        self.operator.execute(f"cp {template} {source}:/{template.name}")
+        self.operator.execute(f"exec {source} /bin/bash -c 'chmod +x /{template.name}'")
+        self.operator.execute(f"exec {source} /bin/bash -c /{template.name}")
+
+    def __handle_mariadb(self, system, source):
+        print("mariadb here")
         pass
 
-    def __handle_posgress():
-        pass
+    def __get_alpha_char(self, string):
+        return " ".join(re.findall("[a-zA-Z]+", string))
 
-    def __handle_mariadb():
-        pass
-
-    def integrate(self, system):
-        print("Waiting until sources are setup.")
-        time.sleep(10)
-        for source in self.config[system]["sources"]:
+    def integrate(self, system, resource):
+        unconfigured_sources = [
+            source
+            for source in self.config[system]["sources"]
+            if not self.__volume_exists(source)
+        ]
+        self.operator.start_resource(resource)
+        if unconfigured_sources:
+            print("Waiting until sources are setup.")
+            time.sleep(30)
+        for source in unconfigured_sources:
             print(f"Creating databases for {system} for source: {source}")
-            if "postgress" in source:
-                self.operator.execute(f"exec {source} /bin/bash -c /import_tpch_sf1.sh")
-            elif "mysql" in source:
-                self.operator.execute(f"exec {source} /bin/bash -c /import/populate.sh")
-            else:
-                print("Yeah nahh source not supported yet. Sorry!")
+            source_root = self.__get_alpha_char(source)
+            self.handler[source_root](system, source)

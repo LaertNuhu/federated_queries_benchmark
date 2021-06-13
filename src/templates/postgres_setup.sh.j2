@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -x 
+{%- for sf in scale_factors -%}
+{%- for table, column in columns.items() %}
+psql -U {{user}} -c "CREATE TABLE postgress_{{sf}}_{{table}} {{column}}"
+psql -U {{user}} -d {{user}} -c "\copy postgress_{{sf}}_{{table}} FROM /data/{{sf}}/{{table}}.tbl with CSV DELIMITER '|' QUOTE '\"' ESCAPE '\';"
+{%- endfor %}
+{%- endfor %}
