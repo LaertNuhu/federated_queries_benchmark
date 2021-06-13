@@ -68,16 +68,16 @@ class Benchmarker:
                 f"starting resources for {system}. "
                 f"Configuration is on {resource.name}"
             )
-            # under_test_system = self.__str_to_class(system.capitalize())
-            # under_test_system().setup()
-            # self.operator.start_resource(resource)
-            # under_test_system().post_startup()
+            under_test_system = self.__str_to_class(system.capitalize())
+            under_test_system().setup()
+            self.operator.start_resource(resource)
+            under_test_system().post_startup()
             self.intergrator.integrate(system)
             # do smth with the resources
-            # callback(system)
+            callback(system)
             # # stop resources
-            # print(f"deleting resources for {system}")
-            # self.operator.stop_resource(resource)
+            print(f"deleting resources for {system}")
+            self.operator.stop_resource(resource)
 
     def __iterate_scale_factors(self, system, callback):
         """Execute a callback function for every scale factor"""
