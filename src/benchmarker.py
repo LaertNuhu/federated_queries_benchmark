@@ -70,7 +70,7 @@ class Benchmarker:
             )
             under_test_system = self.__str_to_class(system.capitalize())
             under_test_system().setup()
-            self.intergrator.integrate(system)
+            self.intergrator.integrate(system, resource)
             under_test_system().post_startup()
             # do smth with the resources
             callback(system)
