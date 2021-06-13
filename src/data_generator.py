@@ -57,7 +57,8 @@ class DataIntegrator:
     def __handle_mysql(self, system, source):
         template = self.templator.render_mysql_template(self.config[system], source)
         self.operator.execute(f"cp {template} {source}:/{template.name}")
-        self.operator.execute(f"exec {source} /bin/bash -c 'chmod +x {template.name}'")
+        self.operator.execute(f"exec {source} /bin/bash -c 'chmod +x /{template.name}'")
+        self.operator.execute(f"exec {source} /bin/bash -c /{template.name}")
 
     def __handle_postgress(self, system, source):
         print("Not there yet")
@@ -76,6 +77,10 @@ class DataIntegrator:
             f"Configuration is located on {resource.name}"
         )
         if self.__check_docker_volume_existence(system):
+            print(
+                "Volumes have already been created."
+                "If there is any misconfigurations remove all the volumes except test-data."
+            )
             self.operator.start_resource(resource)
         else:
             self.operator.start_resource(resource)
@@ -85,9 +90,9 @@ class DataIntegrator:
             print(f"Creating databases for {system} for source: {source}")
             source_root = self.__get_alpha_char(source)
             self.handler[source_root](system, source)
-            #if "postgress" in source:
+            # if "postgress" in source:
             #    self.operator.execute(f"exec {source} /bin/bash -c /import_tpch_sf1.sh")
-            #elif "mysql" in source:
+            # elif "mysql" in source:
             #    self.operator.execute(f"exec {source} /bin/bash -c /import/populate.sh")
-            #else:
+            # else:
             #    print("Yeah nahh source not supported yet. Sorry!")
