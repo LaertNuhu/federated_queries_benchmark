@@ -1,6 +1,6 @@
 appdirs==1.4.4
 biopython==1.79
-black
+black==21.5b2
 certifi==2021.5.30
 chardet==4.0.0
 click==8.0.1
@@ -10,9 +10,9 @@ idna==2.10
 Jinja2==3.0.1
 MarkupSafe==2.0.1
 mongo==0.2.0
-mypy-extensions
-numpy
-pandas
+mypy-extensions==0.4.3
+numpy==1.20.3
+pandas==1.2.4
 pathlib==1.0.1
 pathspec==0.8.1
 presto==0.6.2
@@ -25,7 +25,7 @@ pytz==2021.1
 PyYAML==5.4.1
 regex==2021.4.4
 requests==2.25.1
-scipy
+scipy==1.6.3
 six==1.16.0
 toml==0.10.2
 urllib3==1.26.5
