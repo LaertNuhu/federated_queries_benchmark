@@ -45,7 +45,6 @@ class Templator:
                 results.append(Path(f"./src/compose_files/docker-compose-{system}.yml"))
         return results
 
-
     def __create_columns(self, table):
         columns = "("
         for key, value in self.tables_schema[table].items():
@@ -67,6 +66,20 @@ class Templator:
         Path(f"./src/compose_files/{key}.sh").write_text(result)
         return Path(f"./src/compose_files/{key}.sh")
 
+    def render_postgres_template(self, config, key):
+        sources_config_yml = Path("./src/templates/postgres_setup.sh.j2")
+        scale_factors = config["scale_factors"]
+        if "postgres" not in key:
+            return None
+
+        tables = dict.fromkeys(config["sources"][key]["tables"])
+        columns = {column: self.__create_columns(column) for column in tables}
+        result = jinja2.Template(sources_config_yml.read_text()).render(
+            **config["sources"][key], scale_factors=scale_factors, columns=columns
+        )
+        Path(f"./src/compose_files/{key}.sh").write_text(result)
+        return Path(f"./src/compose_files/{key}.sh")
+
     def render_catalog_template(self, sources):
         """Creates catalogs for mysql and posgres"""
         sources_config_yml = Path("./src/templates/catalog.properties.j2")
@@ -78,4 +91,3 @@ class Templator:
                 parents=True, exist_ok=True
             )
             Path(f"./catalog/{source}.properties").write_text(result)
-

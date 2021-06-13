@@ -43,16 +43,9 @@ class DataIntegrator:
             "mariadb": self.__handle_mariadb,
         }
 
-    def __check_docker_volume_existence(self, system):
-        volumes_already_exist = []
-        for source in self.config[system]["sources"]:
-            result = self.operator.execute(f"volume ls | grep '{system}'").decode(
-                "utf-8"
-            )
-            volumes_already_exist.append(
-                True
-            ) if system in result else volumes_already_exist.append(False)
-        return all(volumes_already_exist)
+    def __volume_exists(self, source):
+        result = self.operator.execute(f"volume ls | grep '{source}'").decode("utf-8")
+        return True if source in result else False
 
     def __handle_mysql(self, system, source):
         template = self.templator.render_mysql_template(self.config[system], source)
@@ -61,8 +54,10 @@ class DataIntegrator:
         self.operator.execute(f"exec {source} /bin/bash -c /{template.name}")
 
     def __handle_postgress(self, system, source):
-        print("Not there yet")
-        pass
+        template = self.templator.render_postgres_template(self.config[system], source)
+        self.operator.execute(f"cp {template} {source}:/{template.name}")
+        self.operator.execute(f"exec {source} /bin/bash -c 'chmod +x /{template.name}'")
+        self.operator.execute(f"exec {source} /bin/bash -c /{template.name}")
 
     def __handle_mariadb(self, system, source):
         print("mariadb here")
@@ -72,27 +67,16 @@ class DataIntegrator:
         return " ".join(re.findall("[a-zA-Z]+", string))
 
     def integrate(self, system, resource):
-        print(
-            f"starting resources for {system}. "
-            f"Configuration is located on {resource.name}"
-        )
-        if self.__check_docker_volume_existence(system):
-            print(
-                "Volumes have already been created."
-                "If there is any misconfigurations remove all the volumes except test-data."
-            )
-            self.operator.start_resource(resource)
-        else:
-            self.operator.start_resource(resource)
+        unconfigured_sources = [
+            source
+            for source in self.config[system]["sources"]
+            if not self.__volume_exists(source)
+        ]
+        self.operator.start_resource(resource)
+        if unconfigured_sources:
             print("Waiting until sources are setup.")
-            time.sleep(15)
-        for source in self.config[system]["sources"]:
+            time.sleep(30)
+        for source in unconfigured_sources:
             print(f"Creating databases for {system} for source: {source}")
             source_root = self.__get_alpha_char(source)
             self.handler[source_root](system, source)
-            # if "postgress" in source:
-            #    self.operator.execute(f"exec {source} /bin/bash -c /import_tpch_sf1.sh")
-            # elif "mysql" in source:
-            #    self.operator.execute(f"exec {source} /bin/bash -c /import/populate.sh")
-            # else:
-            #    print("Yeah nahh source not supported yet. Sorry!")
