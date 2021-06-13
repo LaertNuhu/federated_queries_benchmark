@@ -71,6 +71,7 @@ class Benchmarker:
             under_test_system = self.__str_to_class(system.capitalize())
             under_test_system().setup()
             self.operator.start_resource(resource)
+            under_test_system().post_startup()
             self.intergrator.integrate(system)
             # do smth with the resources
             callback(system)
@@ -128,5 +129,5 @@ class Benchmarker:
 
 
 if __name__ == "__main__":
-    benchmarker = Benchmarker("Presto")
+    benchmarker = Benchmarker("Drill")
     benchmarker.run_benchmarks()
