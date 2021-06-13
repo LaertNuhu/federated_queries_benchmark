@@ -48,12 +48,8 @@ class DataIntegrator:
         for source in self.config[system]["sources"]:
             print(f"Creating databases for {system} for source: {source}")
             if "postgress" in source:
-                self.operator.run(
-                    f"docker exec {source} /bin/bash -c  /import_tpch_sf1.sh"
-                )
+                self.operator.execute(f"exec {source} /bin/bash -c /import_tpch_sf1.sh")
             elif "mysql" in source:
-                self.operator.execute(
-                    f"exec {source} /bin/bash -c /import_tpch_sf1.sh"
-                )
+                self.operator.execute(f"exec {source} /bin/bash -c /import/populate.sh")
             else:
                 print("Yeah nahh source not supported yet. Sorry!")
