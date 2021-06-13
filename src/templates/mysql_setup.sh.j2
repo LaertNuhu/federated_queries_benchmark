@@ -8,6 +8,6 @@ mysql -u {{user}} --password={{password}} -e "create database public;"
 {%- for sf in scale_factors -%}
 {%- for table, column in columns.items() %}
 mysql public -u {{user}} --password={{password}} -e "CREATE TABLE mysql_{{sf}}_{{table}} {{column}}"
-mysql public -u {{user}} --password={{password}} -e "LOAD DATA LOCAL INFILE '/data/{{sf}}/{{table}}.tbl' into table mysql_{{sf}}_{{table}} FIELDS TERMINATED BY '|';"
+mysql public -u {{user}} --password={{password}} --local-infile=1 -e "LOAD DATA LOCAL INFILE '/data/{{sf}}/{{table}}.tbl' into table mysql_{{sf}}_{{table}} FIELDS TERMINATED BY '|';"
 {%- endfor %}
 {%- endfor %}
