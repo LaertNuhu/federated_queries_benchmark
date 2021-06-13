@@ -1,9 +1,9 @@
 version: "3.7"
 
 services:
-    {%- for key,value in sources.items() %}
+    {% for key,value in sources.items() %}
     {%- if "postgress" in key -%}
-        {% set source_ini = "POSTGRESS" %}
+        {% set source_ini = "POSTGRES" %}
     {%- elif "mysql" in key -%}
         {% set source_ini = "MYSQL" %}
         {% set ROOT_PWD = "mysql" %}
@@ -13,10 +13,10 @@ services:
         container_name: {{key}}
         restart: always
         environment:
-            {{source_ini}}_USER: {{value.user}}
-            {{source_ini}}_PASSWORD: {{value.password}}
+            - {{source_ini}}_USER={{value.user}}
+            - {{source_ini}}_PASSWORD={{value.password}}
             {%- if "mysql" in key %}
-            {{source_ini}}_ROOT_PASSWORD: {{ROOT_PWD}}
+            - {{source_ini}}_ROOT_PASSWORD={{ROOT_PWD}}
             {%- endif %}
         volumes:
             - test-data:/data
@@ -29,9 +29,56 @@ services:
         {% endfor %}
     {% endfor %}
 
+    {%- if "presto" in system%}
+    {{system}}:
+        image: presto
+        container_name: {{system}}
+        hostname: presto
+        restart: always
+        links: 
+        {%- for source in sources %}
+            - {{source}}
+        {%- endfor %}
+        depends_on:
+        {%- for source in sources %}
+            - {{source}}
+        {%- endfor %}
+        ports:
+            - 8080:8080
+    {%- endif %}
+
+    {% if "drill" in system%}
+    {{system}}:
+        image: drill
+        container_name: {{system}}
+        hostname: drill
+        tty: true
+        restart: always
+        environment:
+            HEAP_MEMORY_FRACTION: 2
+        links: 
+        {%- for source in sources %}
+            - {{source}}
+        {%- endfor%}
+        depends_on:
+        {%- for source in sources %}
+            - {{source}}
+        {%- endfor%}
+        expose:
+            - 31010
+            - 31011
+            - 31012
+        ports:
+            - 8080:8047
+    {% endif %}
+
 volumes:
     test-data:
         external: true
 {%- for key,source in sources.items() %}
     {{key}}:
 {%- endfor %}
+
+networks:
+  default:
+    name: polydb-net

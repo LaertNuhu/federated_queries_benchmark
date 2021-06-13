@@ -2,7 +2,7 @@ presto:
   sources: 
     mysql1:
       image: mysql
-      url: jdbc:url
+      url: jdbc:mysql://mysql1:3306
       user: benchmark
       password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
@@ -13,7 +13,7 @@ presto:
         - mysql1:/var/lib/mysql
     mysql2:
       image: mysql
-      url: jdbc:url
+      url: jdbc:mysql://mysql2:3306
       user: benchmark
       password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
@@ -23,8 +23,8 @@ presto:
         - ./mysql/import:/import
         - mysql2:/var/lib/mysql
     postgress1:
-      image: postgresdb
-      url: jdbc:url
+      image: fedbench/postgresdb
+      url: jdbc:postgresql://postgress1:5432/benchmark
       user: benchmark
       password: secret123
       jar-location: url
@@ -33,8 +33,8 @@ presto:
       volumes:
         - postgress1:/var/lib/postgresql/
     postgress2:
-      image: postgresdb
-      url: jdbc:url
+      image: fedbench/postgresdb
+      url: jdbc:postgresql://postgress2:5432/benchmark
       user: benchmark
       password: secret123
       jar-location: url
@@ -43,8 +43,8 @@ presto:
       volumes:
         - postgress2:/var/lib/postgresql/
     postgress3:
-      image: postgresdb
-      url: jdbc:url
+      image: fedbench/postgresdb
+      url: jdbc:postgresql://postgress3:5432/benchmark
       user: benchmark
       password: secret123
       jar-location: url
@@ -52,14 +52,14 @@ presto:
       ports: ["35432:5432"]
       volumes:
         - postgress3:/var/lib/postgresql/
-  queries: ["q1:q11","d1","d3"]
+  queries: ["q1"]
   metrics: ["processing time", "rows/sec"]
-  scale_factors: [sf1,sf10]
+  scale_factors: [sf1]
 drill:
   sources: 
     mysql1:
       image: mysql
-      url: jdbc:url
+      url: jdbc:mysql://mysql1:3306
       user: benchmark
       password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
@@ -69,8 +69,8 @@ drill:
         - ./mysql/import:/import
         - mysql1:/var/lib/mysql
     postgress1:
-      image: postgresdb
-      url: jdbc:url
+      image: fedbench/postgresdb
+      url: jdbc:postgresql://postgress1:5432/benchmark
       user: benchmark
       password: secret123
       jar-location: url
@@ -85,7 +85,7 @@ spark:
   sources: 
     mysql1:
       image: mysql
-      url: jdbc:url
+      url: jdbc:mysql://mysql1:3306
       user: benchmark
       password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
@@ -95,8 +95,8 @@ spark:
         - ./mysql/import:/import
         - mysql1:/var/lib/mysql
     postgress1:
-      image: postgresdb
-      url: jdbc:url
+      image: fedbench/postgresdb
+      url: jdbc:postgresql://postgress1:5432/benchmark
       user: benchmark
       password: secret123
       jar-location: url
@@ -111,7 +111,7 @@ hive:
   sources: 
     mysql1:
       image: mysql
-      url: jdbc:url
+      url: jdbc:mysql://mysql1:3306
       user: benchmark
       password: pwd
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
@@ -121,8 +121,8 @@ hive:
         - ./mysql/import:/import
         - mysql1:/var/lib/mysql
     postgress1:
-      image: postgresdb
-      url: jdbc:url
+      image: fedbench/postgresdb
+      url: jdbc:postgresql://postgress1:5432/benchmark
       user: benchmark
       password: pwd
       jar-location: url

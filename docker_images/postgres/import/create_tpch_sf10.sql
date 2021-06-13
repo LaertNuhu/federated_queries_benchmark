@@ -1,4 +1,4 @@
-CREATE TABLE pg_sf10_supplier
+CREATE TABLE postgress_sf10_supplier
 (
     s_suppkey   INTEGER,
     s_name      CHAR(25),
@@ -9,7 +9,7 @@ CREATE TABLE pg_sf10_supplier
     s_comment   VARCHAR(101)
 );
 
-CREATE TABLE pg_sf10_part
+CREATE TABLE postgress_sf10_part
 (
     p_partkey     INTEGER,
     p_name        VARCHAR(55),
@@ -22,7 +22,7 @@ CREATE TABLE pg_sf10_part
     p_comment     VARCHAR(23)
 );
 
-CREATE TABLE pg_sf10_partsupp
+CREATE TABLE postgress_sf10_partsupp
 (
     ps_partkey    INTEGER,
     ps_suppkey    INTEGER,
@@ -31,7 +31,7 @@ CREATE TABLE pg_sf10_partsupp
     ps_comment    VARCHAR(199)
 );
 
-CREATE TABLE pg_sf10_customer
+CREATE TABLE postgress_sf10_customer
 (
     c_custkey    INTEGER,
     c_name       VARCHAR(25),
@@ -43,7 +43,7 @@ CREATE TABLE pg_sf10_customer
     c_comment    VARCHAR(117)
 );
 
-CREATE TABLE pg_sf10_orders
+CREATE TABLE postgress_sf10_orders
 (
     o_orderkey      BIGINT,
     o_custkey       INTEGER,
@@ -56,7 +56,7 @@ CREATE TABLE pg_sf10_orders
     o_comment       VARCHAR(79)
 );
 
-CREATE TABLE pg_sf10_lineitem
+CREATE TABLE postgress_sf10_lineitem
 (
     l_orderkey      BIGINT,
     l_partkey       INTEGER,
@@ -76,7 +76,7 @@ CREATE TABLE pg_sf10_lineitem
     l_comment       VARCHAR(44)
 );
 
-CREATE TABLE pg_sf10_nation
+CREATE TABLE postgress_sf10_nation
 (
     n_nationkey INTEGER,
     n_name      CHAR(25),
@@ -84,7 +84,7 @@ CREATE TABLE pg_sf10_nation
     n_comment   VARCHAR(152)
 );
 
-CREATE TABLE pg_sf10_region
+CREATE TABLE postgress_sf10_region
 (
     r_regionkey INTEGER,
     r_name      CHAR(25),
