@@ -23,7 +23,9 @@ class Templator:
         sources_config_yml = Path("./src/templates/docker-compose-sources.yml.j2")
         results = []
         if "sources" in config:
-            result = jinja2.Template(sources_config_yml.read_text()).render(**config)
+            result = jinja2.Template(sources_config_yml.read_text()).render(
+                system=system, **config
+            )
             Path(f"./src/compose_files/docker-compose-{system}.yml").parent.mkdir(
                 parents=True, exist_ok=True
             )
@@ -32,7 +34,7 @@ class Templator:
         else:
             for system in config:
                 result = jinja2.Template(sources_config_yml.read_text()).render(
-                    **config[system]
+                    system=system, **config[system]
                 )
                 Path(f"./src/compose_files/docker-compose-{system}.yml").parent.mkdir(
                     parents=True, exist_ok=True
@@ -42,6 +44,7 @@ class Templator:
                 )
                 results.append(Path(f"./src/compose_files/docker-compose-{system}.yml"))
         return results
+
 
     def __create_columns(self, table):
         columns = "("
@@ -63,3 +66,16 @@ class Templator:
         )
         Path(f"./src/compose_files/{key}.sh").write_text(result)
         return Path(f"./src/compose_files/{key}.sh")
+
+    def render_catalog_template(self, sources):
+        """Creates catalogs for mysql and posgres"""
+        sources_config_yml = Path("./src/templates/catalog.properties.j2")
+        for source in sources:
+            result = jinja2.Template(sources_config_yml.read_text()).render(
+                **sources[source], key=source
+            )
+            Path(f"./catalog/{source}.properties").parent.mkdir(
+                parents=True, exist_ok=True
+            )
+            Path(f"./catalog/{source}.properties").write_text(result)
+

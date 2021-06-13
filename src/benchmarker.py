@@ -5,6 +5,7 @@ import pandas as pd
 from configurator import Configurator
 from docker_operator import DockerOperator
 from data_generator import TestDataGenerator, DataIntegrator
+from systems import *
 from pathlib import Path
 import random
 
@@ -27,22 +28,27 @@ class Benchmarker:
         l.sort(key=alphanum)
         return l
 
+    def __str_to_class(self, classname):
+        return getattr(sys.modules[__name__], classname)
+
     def benchmark(self, system, query):
         """Runs query based on a system"""
-        try:
-            start = time.time()
-            # system.run_query(query)
-            time.sleep(random.random() * 2)
-            end = time.time()
-            return str(end - start)
-        except Exception as e:
-            Path("./benchmark/error/errors.log").parent.mkdir(
-                parents=True, exist_ok=True
-            )
-            log = Path("./benchmark/error/errors.log").open("a")
-            log.write(str(e))
-            log.write("\n")
-            return "0"
+        # try:
+        start = time.time()
+        under_test_system = self.__str_to_class(system.capitalize())()
+        print(query)
+        under_test_system.run_query(query)
+        time.sleep(random.random() * 2)
+        end = time.time()
+        return str(end - start)
+        # except Exception as e:
+        #     Path("./benchmark/error/errors.log").parent.mkdir(
+        #         parents=True, exist_ok=True
+        #     )
+        #     log = Path("./benchmark/error/errors.log").open("a")
+        #     log.write(str(e))
+        #     log.write("\n")
+        #     return "0"
 
     def __create_results_file(self, system):
         """Creates results csv file"""
@@ -57,12 +63,20 @@ class Benchmarker:
         resources = self.configurator.get_rendered_sources()
         zip_list = list(zip(systems, resources))
         for system, resource in zip_list:
-            self.intergrator.integrate(system, resource)
+            # start resources
+            print(
+                f"starting resources for {system}. "
+                f"Configuration is on {resource.name}"
+            )
+            under_test_system = self.__str_to_class(system.capitalize())
+            under_test_system().setup()
+            self.intergrator.integrate(system)
+            under_test_system().post_startup()
             # do smth with the resources
-            # callback(system)
-            # stop resources
-            # print(f"deleting resources for {system}")
-            # self.operator.stop_resource(resource)
+            callback(system)
+            # # stop resources
+            print(f"deleting resources for {system}")
+            self.operator.stop_resource(resource)
 
     def __iterate_scale_factors(self, system, callback):
         """Execute a callback function for every scale factor"""
@@ -102,7 +116,7 @@ class Benchmarker:
                 f.write(benchmark_result)
                 f.flush()
             f.write("\n")
-            # time.sleep(10)
+            time.sleep(10)
 
     def run_benchmarks(self, iterations=2):
         self.__iterate_systems(

@@ -85,3 +85,9 @@ class DataIntegrator:
             print(f"Creating databases for {system} for source: {source}")
             source_root = self.__get_alpha_char(source)
             self.handler[source_root](system, source)
+            #if "postgress" in source:
+            #    self.operator.execute(f"exec {source} /bin/bash -c /import_tpch_sf1.sh")
+            #elif "mysql" in source:
+            #    self.operator.execute(f"exec {source} /bin/bash -c /import/populate.sh")
+            #else:
+            #    print("Yeah nahh source not supported yet. Sorry!")

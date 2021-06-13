@@ -22,4 +22,6 @@ USER ${DRILL_USER}
 
 WORKDIR ${DRILL_HOME}
 
+RUN chmod +x /entrypoint.sh
+
 ENTRYPOINT /entrypoint.sh
