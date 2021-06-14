@@ -4,6 +4,6 @@
     {% set connector_name = "mysql" %}
 {%- endif -%}
 connector.name={{connector_name}}
-connection-url=jdbc:{{connector_name}}://{{key}}:5432{%- if "postgress" in key -%}/{{user}}{%- endif %}
+connection-url={{url}}
 connection-user={{user}}
 connection-password={{password}}
