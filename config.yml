@@ -52,7 +52,7 @@ presto: &sources
       ports: ["35432:5432"]
       volumes:
         - postgress3:/var/lib/postgresql/
-  queries: [q1,q2]
+  queries: [q1,q2,q3]
   metrics: ["processing time", "rows/sec"]
-  scale_factors: [sf1,sf2]
+  scale_factors: [sf1,sf10]
 drill: *sources
