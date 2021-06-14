@@ -57,26 +57,30 @@ class Benchmarker:
         )
         return Path(f"./benchmark/results/{system}.csv").open("a")
 
-    def __iterate_systems(self, callback):
+    def __iterate_systems(self,callback, header=False):
         """Execute a callback function for every system."""
         systems = list(self.queries.keys())
         resources = self.configurator.get_rendered_sources()
         zip_list = list(zip(systems, resources))
         for system, resource in zip_list:
-            # start resources
-            print(
-                f"starting resources for {system}. "
-                f"Configuration is on {resource.name}"
-            )
-            under_test_system = self.__str_to_class(system.capitalize())
-            under_test_system().setup()
-            self.intergrator.integrate(system, resource)
-            under_test_system().post_startup()
-            # do smth with the resources
-            callback(system)
-            # stop resources
-            print(f"deleting resources for {system}")
-            self.operator.stop_resource(resource)
+            if header:
+                print("Creatings headers")
+                callback(system)
+            else:
+                # start resources
+                print(
+                    f"starting resources for {system}. "
+                    f"Configuration is on {resource.name}"
+                )
+                under_test_system = self.__str_to_class(system.capitalize())
+                under_test_system().setup()
+                self.intergrator.integrate(system, resource)
+                under_test_system().post_startup()
+                # do smth with the resources
+                callback(system)
+                # stop resources
+                print(f"deleting resources for {system}")
+                self.operator.stop_resource(resource)
 
     def __iterate_scale_factors(self, system, callback):
         """Execute a callback function for every scale factor"""
@@ -100,7 +104,7 @@ class Benchmarker:
 
     def write_headers(self):
         """Executes public function."""
-        self.__iterate_systems(lambda system: self.__construct_header(system))
+        self.__iterate_systems(header=True,callback = lambda system: self.__construct_header(system))
 
     def __run_query_and_save_results(self, system, scaleFactor, iterations):
         f = self.__create_results_file(system)
@@ -128,5 +132,6 @@ class Benchmarker:
 
 
 if __name__ == "__main__":
-    benchmarker = Benchmarker("Presto")
+    benchmarker = Benchmarker("Drill")
+    benchmarker.write_headers()
     benchmarker.run_benchmarks()
