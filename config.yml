@@ -32,7 +32,7 @@ presto: &sources
       ports: ["15432:5432"]
       volumes:
         - ./postgress1/setup:/existing_tables
-        - postgress1:/var/lib/postgresql/
+        - postgress1:/var/lib/postgresql/data
     postgress2:
       image: fedbench/postgresdb
       url: jdbc:postgresql://postgress2:5432/benchmark
@@ -43,7 +43,7 @@ presto: &sources
       ports: ["25432:5432"]
       volumes:
         - ./postgress2/setup:/existing_tables
-        - postgress2:/var/lib/postgresql/
+        - postgress2:/var/lib/postgresql/data
     postgress3:
       image: fedbench/postgresdb
       url: jdbc:postgresql://postgress3:5432/benchmark
@@ -54,7 +54,7 @@ presto: &sources
       ports: ["35432:5432"]
       volumes:
         - ./postgress3/setup:/existing_tables
-        - postgress3:/var/lib/postgresql/
+        - postgress3:/var/lib/postgresql/data
   queries: [q1,q2,q3]
   metrics: ["processing time", "rows/sec"]
   scale_factors: [sf1,sf10]
