@@ -132,6 +132,6 @@ class Benchmarker:
 
 
 if __name__ == "__main__":
-    benchmarker = Benchmarker("Drill")
+    benchmarker = Benchmarker()
     benchmarker.write_headers()
     benchmarker.run_benchmarks()
