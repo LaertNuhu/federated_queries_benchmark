@@ -87,9 +87,10 @@ class Drill(System, PyDrill):
         return self.query(sql, timeout=timeout)
 
     def post_startup(self):
-        time.sleep(10)
+        time.sleep(20)
         print("Drill needs some time until is fully started.")
         self.__enable_storages()
+        self.run_query("ALTER SYSTEM SET `planner.memory.percent_per_query` = 1.0")
 
     def __config_template(self, name, **kwargs):
         if "postgres" in name:
@@ -146,6 +147,7 @@ class Spark(System):
         pass
 
     def run_query(self, sql, show):
+        raise Exception("System is not implemented yet")
         pass
 
     def post_startup(self):
@@ -160,12 +162,8 @@ class Hive(System):
         pass
 
     def run_query(self, sql, show):
+        raise Exception("System is not implemented yet")
         pass
 
     def post_startup(self):
         pass
-
-
-if __name__ == "__main__":
-    presto = Drill()
-    presto.create_configs()
