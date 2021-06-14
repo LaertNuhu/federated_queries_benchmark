@@ -1,5 +1,5 @@
 #!/bin/bash
-
+touch /existing_tables
 mysql -u root --password=mysql -e "GRANT ALL PRIVILEGES ON *.* TO '{{user}}'@'%';"
 mysql -u root --password=mysql -e "FLUSH PRIVILEGES;"
 mysql -u root --password=mysql -e "SET GLOBAL local_infile=1;"
@@ -7,7 +7,13 @@ mysql -u {{user}} --password={{password}} -e "create database public;"
 
 {%- for sf in scale_factors -%}
 {%- for table, column in columns.items() %}
-mysql public -u {{user}} --password={{password}} -e "CREATE TABLE mysql_{{sf}}_{{table}} {{column}}"
-mysql public -u {{user}} --password={{password}} --local-infile=1 -e "LOAD DATA LOCAL INFILE '/data/{{sf}}/{{table}}.tbl' into table mysql_{{sf}}_{{table}} FIELDS TERMINATED BY '|';"
+if grep -Fxq "{{sf}}_{{table}}" /existing_tables
+then
+    echo "table was already configured"
+else
+    mysql public -u {{user}} --password={{password}} -e "CREATE TABLE mysql_{{sf}}_{{table}} {{column}}"
+    mysql public -u {{user}} --password={{password}} --local-infile=1 -e "LOAD DATA LOCAL INFILE '/data/{{sf}}/{{table}}.tbl' into table mysql_{{sf}}_{{table}} FIELDS TERMINATED BY '|';"
+    echo {{sf}}_{{table}} >> /existing_tables
+fi
 {%- endfor %}
 {%- endfor %}
