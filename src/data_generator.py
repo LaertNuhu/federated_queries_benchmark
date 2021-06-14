@@ -25,7 +25,7 @@ class TestDataGenerator:
             )
             self.operator.execute(
                 "run -it --rm -v test-data:/data --env-file docker_images/data_generator/data_generator.env"
-                " --name data-generator tpch-generator"
+                " --name data-generator fedbench/tpch-generator"
             )
             end = time.time()
             print(f"Data generation is finished. It took: {str(end - start)}s")
