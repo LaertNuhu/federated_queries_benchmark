@@ -9,7 +9,7 @@ presto: &sources
       tables: ["orders","supplier"]
       ports: ["3306:3306"]
       volumes:
-        - ./mysql/import:/import
+        - ./mysql1/setup:/existing_tables
         - mysql1:/var/lib/mysql
     mysql2:
       image: mysql
@@ -20,7 +20,7 @@ presto: &sources
       tables: ["partsupp"]
       ports: ["4306:3306"]
       volumes:
-        - ./mysql/import:/import
+        - ./mysql2/setup:/existing_tables
         - mysql2:/var/lib/mysql
     postgress1:
       image: fedbench/postgresdb
@@ -31,6 +31,7 @@ presto: &sources
       tables: ["lineitem"]
       ports: ["15432:5432"]
       volumes:
+        - ./postgress1/setup:/existing_tables
         - postgress1:/var/lib/postgresql/
     postgress2:
       image: fedbench/postgresdb
@@ -41,6 +42,7 @@ presto: &sources
       tables: ["part","region"]
       ports: ["25432:5432"]
       volumes:
+        - ./postgress2/setup:/existing_tables
         - postgress2:/var/lib/postgresql/
     postgress3:
       image: fedbench/postgresdb
@@ -51,6 +53,7 @@ presto: &sources
       tables: ["customer","nation"]
       ports: ["35432:5432"]
       volumes:
+        - ./postgress3/setup:/existing_tables
         - postgress3:/var/lib/postgresql/
   queries: [q1,q2,q3]
   metrics: ["processing time", "rows/sec"]
