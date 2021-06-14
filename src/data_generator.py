@@ -51,12 +51,16 @@ class DataIntegrator:
         template = self.templator.render_mysql_template(self.config[system], source)
         self.operator.execute(f"cp {template} {source}:/{template.name}")
         self.operator.execute(f"exec {source} /bin/bash -c 'chmod +x /{template.name}'")
+        # windows adds a ^M at end of the line
+        self.operator.execute(f"exec {source} /bin/bash -c \"sed -i -e 's/\\r$//' /{template.name}\"")
         self.operator.execute(f"exec {source} /bin/bash -c /{template.name}")
 
     def __handle_postgress(self, system, source):
         template = self.templator.render_postgres_template(self.config[system], source)
         self.operator.execute(f"cp {template} {source}:/{template.name}")
         self.operator.execute(f"exec {source} /bin/bash -c 'chmod +x /{template.name}'")
+        # windows adds a ^M at end of the line
+        self.operator.execute(f"exec {source} /bin/bash -c \"sed -i -e 's/\\r$//' /{template.name}\"")
         self.operator.execute(f"exec {source} /bin/bash -c /{template.name}")
 
     def __handle_mariadb(self, system, source):
@@ -67,16 +71,10 @@ class DataIntegrator:
         return " ".join(re.findall("[a-zA-Z]+", string))
 
     def integrate(self, system, resource):
-        unconfigured_sources = [
-            source
-            for source in self.config[system]["sources"]
-            if not self.__volume_exists(source)
-        ]
         self.operator.start_resource(resource)
-        if unconfigured_sources:
-            print("Waiting until sources are setup.")
-            time.sleep(30)
-        for source in unconfigured_sources:
+        print("Waiting until sources are setup.")
+        time.sleep(60)
+        for source in self.config[system]["sources"]:
             print(f"Creating databases for {system} for source: {source}")
             source_root = self.__get_alpha_char(source)
             self.handler[source_root](system, source)
