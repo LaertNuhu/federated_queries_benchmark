@@ -1,4 +1,4 @@
-presto:
+presto: &sources
   sources: 
     mysql1:
       image: mysql
@@ -52,84 +52,7 @@ presto:
       ports: ["35432:5432"]
       volumes:
         - postgress3:/var/lib/postgresql/
-  queries: ["q1"]
+  queries: [q1,q2]
   metrics: ["processing time", "rows/sec"]
-  scale_factors: [sf1]
-drill:
-  sources: 
-    mysql1:
-      image: mysql
-      url: jdbc:mysql://mysql1:3306
-      user: benchmark
-      password: secret123
-      jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["lineitem","supplier"]
-      ports: ["3306:3306"]
-      volumes:
-        - ./mysql/import:/import
-        - mysql1:/var/lib/mysql
-    postgress1:
-      image: fedbench/postgresdb
-      url: jdbc:postgresql://postgress1:5432/benchmark
-      user: benchmark
-      password: secret123
-      jar-location: url
-      tables: ["nation","region","supplier"]
-      ports: ["35432:5432"]
-      volumes:
-        - postgress1:/var/lib/postgresql/
-  queries: ["q1","q2"] # or ["q1:q7"]
-  metrics: ["processing time", "rows/sec"]
-  scale_factors: sf1
-spark:
-  sources: 
-    mysql1:
-      image: mysql
-      url: jdbc:mysql://mysql1:3306
-      user: benchmark
-      password: secret123
-      jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["lineitem","supplier"]
-      ports: ["3306:3306"]
-      volumes:
-        - ./mysql/import:/import
-        - mysql1:/var/lib/mysql
-    postgress1:
-      image: fedbench/postgresdb
-      url: jdbc:postgresql://postgress1:5432/benchmark
-      user: benchmark
-      password: secret123
-      jar-location: url
-      tables: ["nation","region","supplier"]
-      ports: ["35432:5432"]
-      volumes:
-        - postgress1:/var/lib/postgresql/
-  queries: ["q1","q2"] # or ["q1:q7"]
-  metrics: ["processing time", "rows/sec"]
-  scale_factors: sf1
-hive:
-  sources: 
-    mysql1:
-      image: mysql
-      url: jdbc:mysql://mysql1:3306
-      user: benchmark
-      password: pwd
-      jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["lineitem","supplier"]
-      ports: ["3306:3306"]
-      volumes:
-        - ./mysql/import:/import
-        - mysql1:/var/lib/mysql
-    postgress1:
-      image: fedbench/postgresdb
-      url: jdbc:postgresql://postgress1:5432/benchmark
-      user: benchmark
-      password: pwd
-      jar-location: url
-      tables: ["nation","region","supplier"]
-      ports: ["35432:5432"]
-      volumes:
-        - postgress1:/var/lib/postgresql/
-  queries: ["q1","q2"] # or ["q1:q7"]
-  metrics: ["processing time", "rows/sec"]
-  scale_factors: sf1
+  scale_factors: [sf1,sf2]
+drill: *sources
