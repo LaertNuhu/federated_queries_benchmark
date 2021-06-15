@@ -24,7 +24,7 @@ make run
 This command will start all the conatiners defined on your docker compose file. 
 
 You should have: 
-- jupyter notebook running on `localhost:8888` (password is _demo_)
+- jupyter notebook running on `localost:8888` (password is _demo_)
 - drill web ui running on `localhost:8047`
 - presto web ui running on `localhost:8080`
 

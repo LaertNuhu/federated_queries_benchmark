@@ -17,10 +17,10 @@ generate-test-data:
 	docker run -it --rm -v test-data:/data --env-file data_generator/data_generator.env --name data-generator tpch-generator
 
 run:
-	docker-compose -f .\docker-compose.yml up -d
+	docker-compose -f ./docker-compose.yml up -d
 
 stop:
-	docker-compose -f .\docker-compose.yml down
+	docker-compose -f ./docker-compose.yml down
 
 populate:
 	@echo MY_VAR IS $(POSTGRESS)

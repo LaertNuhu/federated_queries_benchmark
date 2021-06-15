@@ -1,5 +1,5 @@
-FROM polydb/hadoop-base
-
+#FROM hadoop-base
+FROM bde2020/hadoop-base:2.0.0-hadoop2.7.4-java8
 ENV HIVE_VERSION 2.3.8
 ENV HIVE_URL https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz
 ENV HIVE_HOME /opt/hive
