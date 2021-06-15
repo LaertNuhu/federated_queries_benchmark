@@ -5,7 +5,6 @@ presto: &sources
       url: jdbc:mysql://mysql1:3306
       user: benchmark
       password: secret123
-      jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["orders","supplier"]
       ports: ["3306:3306"]
       volumes:
@@ -16,7 +15,6 @@ presto: &sources
       url: jdbc:mysql://mysql2:3306
       user: benchmark
       password: secret123
-      jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
       tables: ["partsupp"]
       ports: ["4306:3306"]
       volumes:
@@ -27,7 +25,6 @@ presto: &sources
       url: jdbc:postgresql://postgress1:5432/benchmark
       user: benchmark
       password: secret123
-      jar-location: url
       tables: ["lineitem"]
       ports: ["15432:5432"]
       volumes:
@@ -38,7 +35,6 @@ presto: &sources
       url: jdbc:postgresql://postgress2:5432/benchmark
       user: benchmark
       password: secret123
-      jar-location: url
       tables: ["part","region"]
       ports: ["25432:5432"]
       volumes:
@@ -49,7 +45,6 @@ presto: &sources
       url: jdbc:postgresql://postgress3:5432/benchmark
       user: benchmark
       password: secret123
-      jar-location: url
       tables: ["customer","nation"]
       ports: ["35432:5432"]
       volumes:
