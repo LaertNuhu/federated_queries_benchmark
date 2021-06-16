@@ -410,7 +410,7 @@ services:
     ports: 
       - "8888:8888"
     volumes:
-      - ./benchmark/:/home/jovyan/
+      - ./benchmark/:/home/Desktop/
     depends_on:
       - drill
       - presto
