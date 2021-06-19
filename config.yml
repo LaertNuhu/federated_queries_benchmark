@@ -1,12 +1,78 @@
-presto: &sources
-  sources: 
+# presto: &var1
+#   sources:
+#     mysql1:
+#       image: mysql
+#       url: jdbc:mysql://mysql1:3306
+#       user: benchmark
+#       password: secret123
+#       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
+#       tables: ["part","nation","region"]
+#       ports: ["3306:3306"]
+#       volumes:
+#         - ./mysql1/setup:/existing_tables
+#         - mysql1:/var/lib/mysql
+#     postgress1:
+#       image: fedbench/postgresdb
+#       url: jdbc:postgresql://postgress1:5432/benchmark
+#       user: benchmark
+#       password: secret123
+#       jar-location: url
+#       tables: ["partsupp","supplier"]
+#       ports: ["15432:5432"]
+#       volumes:
+#         - ./postgress1/setup:/existing_tables
+#         - postgress1:/var/lib/postgresql/data
+#   queries: [q2]
+#   metrics: ["processing time"]
+#   scale_factors: [sf1,sf10]
+
+# drill: 
+#   <<: *var1
+#   scale_factors: [sf1]
+
+
+# presto: &var2
+#   sources:
+#     postgress1:
+#       image: fedbench/postgresdb
+#       url: jdbc:postgresql://postgress1:5432/benchmark
+#       user: benchmark
+#       password: secret123
+#       jar-location: url
+#       tables: ["partsupp","nation", "region"]
+#       ports: ["15432:5432"]
+#       volumes:
+#         - ./postgress1/setup:/existing_tables
+#         - postgress1:/var/lib/postgresql/data
+#     postgress2:
+#       image: fedbench/postgresdb
+#       url: jdbc:postgresql://postgress2:5432/benchmark
+#       user: benchmark
+#       password: secret123
+#       jar-location: url
+#       tables: ["part","supplier"]
+#       ports: ["25432:5432"]
+#       volumes:
+#         - ./postgress2/setup:/existing_tables
+#         - postgress2:/var/lib/postgresql/data
+#   queries: [q2]
+#   metrics: ["processing time"]
+#   scale_factors: [sf1,sf10]
+
+# drill: 
+#   <<: *var2
+#   scale_factors: [sf1]
+
+
+presto: &var3
+  sources:
     mysql1:
       image: mysql
       url: jdbc:mysql://mysql1:3306
       user: benchmark
       password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["orders","supplier"]
+      tables: ["partsupp","nation", "region"]
       ports: ["3306:3306"]
       volumes:
         - ./mysql1/setup:/existing_tables
@@ -17,45 +83,15 @@ presto: &sources
       user: benchmark
       password: secret123
       jar-location: url # can be hosted in a cdn/localy and will be fetched and uploaded into the system
-      tables: ["partsupp"]
+      tables: ["part","supplier"]
       ports: ["4306:3306"]
       volumes:
         - ./mysql2/setup:/existing_tables
         - mysql2:/var/lib/mysql
-    postgress1:
-      image: fedbench/postgresdb
-      url: jdbc:postgresql://postgress1:5432/benchmark
-      user: benchmark
-      password: secret123
-      jar-location: url
-      tables: ["lineitem"]
-      ports: ["15432:5432"]
-      volumes:
-        - ./postgress1/setup:/existing_tables
-        - postgress1:/var/lib/postgresql/data
-    postgress2:
-      image: fedbench/postgresdb
-      url: jdbc:postgresql://postgress2:5432/benchmark
-      user: benchmark
-      password: secret123
-      jar-location: url
-      tables: ["part","region"]
-      ports: ["25432:5432"]
-      volumes:
-        - ./postgress2/setup:/existing_tables
-        - postgress2:/var/lib/postgresql/data
-    postgress3:
-      image: fedbench/postgresdb
-      url: jdbc:postgresql://postgress3:5432/benchmark
-      user: benchmark
-      password: secret123
-      jar-location: url
-      tables: ["customer","nation"]
-      ports: ["35432:5432"]
-      volumes:
-        - ./postgress3/setup:/existing_tables
-        - postgress3:/var/lib/postgresql/data
-  queries: [q1,q2,q3]
-  metrics: ["processing time", "rows/sec"]
+  queries: [q2]
+  metrics: ["processing time"]
   scale_factors: [sf1,sf10]
-drill: *sources
+
+drill:
+  <<: *var3
+  scale_factors: [sf1]

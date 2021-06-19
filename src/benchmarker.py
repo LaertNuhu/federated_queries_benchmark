@@ -134,4 +134,4 @@ class Benchmarker:
 if __name__ == "__main__":
     benchmarker = Benchmarker()
     benchmarker.write_headers()
-    benchmarker.run_benchmarks()
+    benchmarker.run_benchmarks(10)
