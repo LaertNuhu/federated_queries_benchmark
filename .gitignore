@@ -1,3 +1,7 @@
 # metaRepo source code
 metaRepo/metaRepo/code
 benchmark/.*
+env
+.vscode/
+src/compose_files
+__pycache__

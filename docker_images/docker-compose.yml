@@ -1,0 +1,422 @@
+version: "3.7"
+
+services:
+
+  # namenode:
+  #   image: hadoop-namenode
+  #   container_name: namenode
+  #   restart: always
+  #   volumes:
+  #     - test-data:/data
+  #   ports:
+  #     - 50071:50070
+  #     - 9000:9000
+  #   environment:
+  #     - CLUSTER_NAME=polydb
+  #   env_file:
+  #     - hadoop/hadoop.env
+
+  # datanode-1:
+  #   image: hadoop-datanode
+  #   container_name: datanode-1
+  #   restart: always
+  #   ports:
+  #     - 50076:50075
+  #   environment:
+  #     - SERVICE_PRECONDITION=namenode:50070
+  #   env_file:
+  #     - hadoop/hadoop.env
+
+  # datanode-2:
+  #   image: hadoop-datanode
+  #   container_name: datanode-2
+  #   restart: always
+  #   ports:
+  #     - 50077:50075
+  #   environment:
+  #     - SERVICE_PRECONDITION=namenode:50070
+  #   env_file:
+  #     - hadoop/hadoop.env
+
+  # resourcemanager:
+  #   image: hadoop-resourcemanager
+  #   container_name: resourcemanager
+  #   restart: always
+  #   ports:
+  #     - 8088:8088
+  #   environment:
+  #     - SERVICE_PRECONDITION=namenode:9000 namenode:50070 datanode-1:50075 datanode-2:50075
+  #   env_file:
+  #     - hadoop/hadoop.env
+
+  # nodemanager:
+  #   image: hadoop-nodemanager
+  #   container_name: nodemanager
+  #   restart: always
+  #   ports:
+  #     - 8042:8042
+  #   environment:
+  #     - SERVICE_PRECONDITION=namenode:9000 namenode:50070 datanode-1:50075 datanode-2:50075 resourcemanager:8088
+  #   env_file:
+  #     - hadoop/hadoop.env
+
+  # timelineserver:
+  #   image: hadoop-timelineserver
+  #   container_name: timelineserver
+  #   restart: always
+  #   ports:
+  #     - 8188:8188
+  #   environment:
+  #     - SERVICE_PRECONDITION=namenode:9000 namenode:50070 datanode-1:50075 datanode-2:50075 resourcemanager:8088
+  #   env_file:
+  #     - hadoop/hadoop.env
+
+  # hive-server:
+  #   image: myhive
+  #   container_name: hive-server
+  #   restart: always
+  #   volumes:
+  #     - test-data:/data
+  #   ports:
+  #     - 10000:10000
+  #   environment:
+  #     # Why do we need this overwrite?
+  #     - HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore/metastore
+  #     - SERVICE_PRECONDITION=hive-metastore:9083
+  #   env_file:
+  #     - hadoop/hadoop.env
+  #     - hive/hive.env
+  #   command: /run-server.sh
+
+  # hive-metastore:
+  #   image: myhive
+  #   container_name: hive-metastore
+  #   restart: always
+  #   ports:
+  #     - 9083:9083
+  #   environment:
+  #     - SERVICE_PRECONDITION=namenode:50070 datanode-1:50075 datanode-2:50075 postgres-metastore:5432
+  #   env_file:
+  #     - hadoop/hadoop.env
+  #     - hive/hive.env
+  #   command: /run-metastore.sh
+
+  # postgres-metastore:
+  #   image: postgres
+  #   container_name: postgres-metastore
+  #   restart: always
+  #   ports:
+  #     - 65432:5432
+  #   volumes:
+  #     - pgmetastoredata:/var/lib/postgresql/data
+  #   environment:
+  #     # These values have to match the HIVE_SITE_CONF_javax_jdo_option_* values in hive.env
+  #     - POSTGRES_DB=metastore
+  #     - POSTGRES_USER=hive
+  #     - POSTGRES_PASSWORD=hivePW123
+
+  # spark-master:
+  #   image: myspark-master
+  #   container_name: spark-master
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
+  #     - 7077:7077
+  #   env_file:
+  #     - spark/spark.env
+
+  # spark-worker-1:
+  #   image: myspark-worker
+  #   container_name: spark-worker-1
+  #   restart: always
+  #   ports:
+  #     - 18081:8081
+  #   environment:
+  #     - SERVICE_PRECONDITION=spark-master:7077
+  #   env_file:
+  #     - spark/spark.env
+
+  # spark-worker-2:
+  #   image: myspark-worker
+  #   container_name: spark-worker-2
+  #   restart: always
+  #   ports:
+  #     - 28081:8081
+  #   environment:
+  #     - SERVICE_PRECONDITION=spark-master:7077
+  #   env_file:
+  #     - spark/spark.env
+
+  postgres-1:
+    image: postgresdb
+    container_name: pg-1
+    restart: always
+    volumes:
+      - test-data:/data
+      - pgvolume1:/var/lib/postgresql/
+    ports:
+      - 15432:5432
+
+  postgres-2:
+    image: postgresdb
+    container_name: pg-2
+    restart: always
+    volumes:
+      - test-data:/data
+      - pgvolume2:/var/lib/postgresql/
+    ports:
+      - 25432:5432
+
+  postgres-3:
+    image: postgresdb
+    container_name: pg-3
+    restart: always
+    volumes:
+      - test-data:/data
+      - pgvolume3:/var/lib/postgresql/
+    ports:
+      - 35432:5432
+
+  postgres-4:
+    image: postgresdb
+    container_name: pg-4
+    restart: always
+    volumes:
+      - test-data:/data
+      - pgvolume4:/var/lib/postgresql/
+    ports:
+      - 45432:5432
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'mysql'
+      MYSQL_USER: 'presto'
+      MYSQL_PASSWORD: 'mysql'
+    ports:
+      - "3306:3306"
+    volumes:
+      - test-data:/data
+      - ./mysql/import:/import
+      - mysqlvolume1:/var/lib/mysql
+
+  mysql1:
+    image: mysql
+    container_name: mysql1
+    environment:
+      MYSQL_ROOT_PASSWORD: 'mysql'
+      MYSQL_USER: 'presto'
+      MYSQL_PASSWORD: 'mysql'
+    ports:
+      - "4306:3306"
+    volumes:
+      - test-data:/data
+      - ./mysql/import:/import
+      - mysqlvolume2:/var/lib/mysql
+
+  mongodb:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - test-data:/data
+
+  mariadb-1:
+    image: mymaria
+    container_name: mdb1
+    restart: always
+    volumes:
+      - test-data:/data
+      - mvolume:/var/lib/mysql
+    ports:
+      - 13306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=mdb
+      - MYSQL_USER=mariadb
+      - MYSQL_PASSWORD=123456
+
+
+  presto:
+    image: presto
+    container_name: presto
+    restart: always
+    links:
+      - postgres-1
+      - postgres-2
+      - postgres-3
+      - postgres-4
+      - mariadb-1
+      - mongodb
+      - mysql
+    depends_on:
+      - postgres-1
+      - postgres-2
+      - postgres-3
+      - postgres-4
+      - mariadb-1
+      - mongodb
+      - mysql
+    ports: 
+      - 8080:8080
+
+  # zookeeper:
+  #   image: zookeeper:3.7.0
+  #   hostname: zookeeper
+  #   container_name: zookeeper
+  #   ports:
+  #     - "2181:2181"
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+
+  drill:
+    image: drill
+    restart: always
+    tty: true
+    container_name: drill
+    hostname: drill
+    environment:
+      HEAP_MEMORY_FRACTION: 2
+      # LOG_LEVEL: INFO
+      # CLUSTERED_MODE: 'true'
+    # volumes:
+    #   - ./drill/drill-override.conf:/opt/drill/conf/drill-override.conf
+    expose:
+      - 31010
+      - 31011
+      - 31012
+    links:
+      - postgres-1
+      - postgres-2
+      - postgres-3
+      - postgres-4
+      - mariadb-1
+      - mongodb
+      - mysql
+    depends_on:
+      - postgres-1
+      - postgres-2
+      - postgres-3
+      - postgres-4
+      - mariadb-1
+      - mongodb
+      - mysql
+    ports: 
+      - 8047:8047
+    # cap_add:
+    #   - SYS_PTRACE
+
+  # drill2:
+  #   image: drill
+  #   restart: always
+  #   tty: true
+  #   container_name: drill2
+  #   hostname: drill2
+  #   environment:
+  #     HEAP_MEMORY_FRACTION: 2
+  #     LOG_LEVEL: INFO
+  #     CLUSTERED_MODE: 'true'
+  #   volumes:
+  #     - ./drill/drill-override.conf:/opt/drill/conf/drill-override.conf
+  #   expose:
+  #     - 31010
+  #     - 31011
+  #     - 31012
+  #   links:
+  #     - postgres-1
+  #     - postgres-2
+  #     - postgres-3
+  #     - postgres-4
+  #     - mariadb-1
+  #     - mongodb
+  #     - mysql
+  #   depends_on:
+  #     - postgres-1
+  #     - postgres-2
+  #     - postgres-3
+  #     - postgres-4
+  #     - mariadb-1
+  #     - mongodb
+  #     - mysql
+  #   ports: 
+  #     - 9047:8047
+  #   cap_add:
+  #     - SYS_PTRACE
+
+
+  jupyter:
+    image: jupyter
+    container_name: jupyter
+    links:
+      - postgres-1
+      - postgres-2
+      - postgres-3
+      - postgres-4
+      - mariadb-1
+      - mongodb
+      - mysql
+    ports: 
+      - "8888:8888"
+    volumes:
+      - ./benchmark/:/home/jovyan/
+    depends_on:
+      - drill
+      - presto
+    command: start-notebook.sh --NotebookApp.password='sha1:2017f6d8a65d:4f2115202d4cd8c081f1c135bc2b41292bcb4ec4'
+
+  # polydb:
+  #   image: polydb/polydb
+  #   container_name: polydb
+  #   restart: always
+  #   tty: true
+
+  # presto-coordinator:
+  #   image: "lewuathe/presto-coordinator:346"
+  #   ports:
+  #     - "8085:8080"
+  #   container_name: presto
+  #   command: http://presto:8080 presto
+  #   volumes:
+  #     - ./presto/catalog:/usr/local/presto/etc/catalog
+
+  # presto-worker0:
+  #   image: "lewuathe/presto-worker:346"
+  #   restart: always
+  #   container_name: worker0
+  #   ports:
+  #     - "8086:8081"
+  #   command: http://presto:8080 worker0
+  #   volumes:
+  #     - ./presto/catalog:/usr/local/presto/etc/catalog
+
+  # presto-worker1:
+  #   image: "lewuathe/presto-worker:346"
+  #   restart: always
+  #   container_name: worker1
+  #   ports:
+  #     - "8087:8081"
+  #   command: http://presto:8080 worker1
+  #   volumes:
+  #     - ./presto/catalog:/usr/local/presto/etc/catalog
+
+volumes:
+  # pgmetastoredata:
+  test-data:
+    external: true
+  pgvolume1:
+  pgvolume2:
+  pgvolume3:
+  pgvolume4:
+  mvolume:
+  mvolume2:
+  mvolume3:
+  mvolume4:
+  mysqlvolume1:
+  mysqlvolume2:
+
+networks:
+  default:
+    name: polydb-net
