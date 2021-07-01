@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+  spark-master:
+    image: fedbench/spark
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - '8080:8080'
+      - '7077:7077'
+
+  spark-worker:
+    image: fedbench/spark
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=16G
+      - SPARK_WORKER_CORES=8
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    depends_on:
+      - spark-master
+
+  postgres-1:
+    image: fedbench/postgresdb
+    container_name: pg-1
+    restart: always
+    environment:
+        - POSTGRES_USER=benchmark
+        - POSTGRES_PASSWORD=secret123
+    volumes:
+      - test-data:/data
+      - pgvolume1:/var/lib/postgresql/data
+  
+  postgres-2:
+    image: fedbench/postgresdb
+    container_name: pg-2
+    restart: always
+    environment:
+        - POSTGRES_USER=benchmark
+        - POSTGRES_PASSWORD=secret123
+    volumes:
+      - test-data:/data
+      - pgvolume1:/var/lib/postgresql/data
+
+  postgres-3:
+    image: fedbench/postgresdb
+    container_name: pg-3
+    restart: always
+    environment:
+        - POSTGRES_USER=benchmark
+        - POSTGRES_PASSWORD=secret123
+    volumes:
+      - test-data:/data
+      - pgvolume1:/var/lib/postgresql/data
+  
+  client:
+    image: fedbench/spark
+    volumes:
+      - ./app.py:/app.py
+
+volumes:
+  test-data:
+    external: true
+  pgvolume1:
