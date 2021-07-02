@@ -64,7 +64,7 @@
 #   scale_factors: [sf1]
 
 
-presto: &var3
+spark: &var3
   sources:
     mysql1:
       image: mysql
@@ -92,6 +92,6 @@ presto: &var3
   metrics: ["processing time"]
   scale_factors: [sf1,sf10]
 
-drill:
-  <<: *var3
-  scale_factors: [sf1]
+# drill:
+#   <<: *var3
+#   scale_factors: [sf1]

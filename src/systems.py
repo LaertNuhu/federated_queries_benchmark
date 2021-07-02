@@ -141,10 +141,11 @@ class Drill(System, PyDrill):
 
 class Spark(System):
     def __init__(self) -> None:
-        super().__init__()
+        self.configurator = Configurator(system="Spark")
 
     def setup(self):
-        pass
+        self.__create_configs()
+        print("spark")
 
     def run_query(self, sql, show):
         raise Exception("System is not implemented yet")
@@ -152,6 +153,32 @@ class Spark(System):
 
     def post_startup(self):
         pass
+
+    def __create_configs(self):
+        sources = self.configurator.get_config()["sources"]
+        scale_factors = self.configurator.get_config()["scale_factors"]
+        for source in sources:
+            if "postgres" in source:
+                driver = "org.postgresql.Driver"
+            if "mysql" in source:
+                driver = "com.mysql.jdbc.Driver"
+            for sf in scale_factors:
+                for table in sources[source]["tables"]:
+                    print(f'''spark.read.format("jdbc").option(
+                \"url\", \"{sources[source]["url"]}\"
+                ).option(
+                    \"fetchSize\",\"250000\"
+                ).option(
+                    \"numPartitions\", \"8\"
+                ).option(
+                    \"dbtable\", \"{source[:-1]}_{sf}_{table}\"
+                ).option(
+                    \"user\",\"benchmark\"
+                ).option(
+                    \"password\", \"secret123\"
+                ).option(
+                    \"driver\", \"{driver}\"
+                ).load().createTempView(\"{source}_public_{source[:-1]}_{sf}_{table}\")''')
 
 
 class Hive(System):
