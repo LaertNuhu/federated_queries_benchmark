@@ -101,6 +101,7 @@ services:
     
     client:
         image: fedbench/spark
+        container_name: client
         volumes:
         - ./app.py:/app.py
     {% endif %}

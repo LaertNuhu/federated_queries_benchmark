@@ -91,3 +91,28 @@ class Templator:
                 parents=True, exist_ok=True
             )
             Path(f"./catalog/{source}.properties").write_text(result)
+
+    def render_spark_app_template(self, config):
+        app_path = Path("./src/templates/app.py.j2")
+        sources = config["sources"]
+        scale_factors = config["scale_factors"]
+        temp_views = []
+        for source in sources:
+            if "postgres" in source:
+                driver = "org.postgresql.Driver"
+            if "mysql" in source:
+                driver = "com.mysql.jdbc.Driver"
+            for sf in scale_factors:
+                for table in sources[source]["tables"]:
+                    temp_views.append(
+                        f'spark.read.format("jdbc").option("url", "{sources[source]["url"]}")'
+                        '.option("fetchSize","250000").option("numPartitions", "8")'
+                        f'.option("dbtable", "{source[:-1]}_{sf}_{table}")'
+                        f'.option("user","{sources[source]["user"]}")'
+                        f'.option("password", "{sources[source]["password"]}")'
+                        f'.option("driver", "{driver}").load()'
+                        f'.createTempView("{source}_public_{source[:-1]}_{sf}_{table}")'
+                    )
+        result = jinja2.Template(app_path.read_text()).render(temp_views=temp_views)
+        Path(f"./src/compose_files/app.py").parent.mkdir(parents=True, exist_ok=True)
+        Path(f"./src/compose_files/app.py").write_text(result)

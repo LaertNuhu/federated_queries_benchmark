@@ -57,7 +57,7 @@ class Benchmarker:
         )
         return Path(f"./benchmark/results/{system}.csv").open("a")
 
-    def __iterate_systems(self,callback, header=False):
+    def __iterate_systems(self, callback, header=False):
         """Execute a callback function for every system."""
         systems = list(self.queries.keys())
         resources = self.configurator.get_rendered_sources()
@@ -104,7 +104,9 @@ class Benchmarker:
 
     def write_headers(self):
         """Executes public function."""
-        self.__iterate_systems(header=True,callback = lambda system: self.__construct_header(system))
+        self.__iterate_systems(
+            header=True, callback=lambda system: self.__construct_header(system)
+        )
 
     def __run_query_and_save_results(self, system, scaleFactor, iterations):
         f = self.__create_results_file(system)
