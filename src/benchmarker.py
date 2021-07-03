@@ -34,13 +34,10 @@ class Benchmarker:
     def benchmark(self, system, query):
         """Runs query based on a system"""
         try:
-            start = time.time()
             under_test_system = self.__str_to_class(system.capitalize())()
-            print(query)
-            under_test_system.run_query(query)
+            processing_time = under_test_system.run_query(query)
             time.sleep(random.random() * 2)
-            end = time.time()
-            return str(end - start)
+            return processing_time
         except Exception as e:
             Path("./benchmark/error/errors.log").parent.mkdir(
                 parents=True, exist_ok=True
@@ -57,7 +54,7 @@ class Benchmarker:
         )
         return Path(f"./benchmark/results/{system}.csv").open("a")
 
-    def __iterate_systems(self,callback, header=False):
+    def __iterate_systems(self, callback, header=False):
         """Execute a callback function for every system."""
         systems = list(self.queries.keys())
         resources = self.configurator.get_rendered_sources()
@@ -104,7 +101,9 @@ class Benchmarker:
 
     def write_headers(self):
         """Executes public function."""
-        self.__iterate_systems(header=True,callback = lambda system: self.__construct_header(system))
+        self.__iterate_systems(
+            header=True, callback=lambda system: self.__construct_header(system)
+        )
 
     def __run_query_and_save_results(self, system, scaleFactor, iterations):
         f = self.__create_results_file(system)

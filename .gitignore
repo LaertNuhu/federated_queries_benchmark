@@ -5,3 +5,4 @@ env
 .vscode/
 src/compose_files
 __pycache__
+.DS_Store

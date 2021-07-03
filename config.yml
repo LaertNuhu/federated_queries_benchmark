@@ -30,6 +30,7 @@
 #   <<: *var1
 #   scale_factors: [sf1]
 
+# spark: *var1
 
 # presto: &var2
 #   sources:
@@ -63,6 +64,7 @@
 #   <<: *var2
 #   scale_factors: [sf1]
 
+# spark: *var2
 
 presto: &var3
   sources:
@@ -92,6 +94,8 @@ presto: &var3
   metrics: ["processing time"]
   scale_factors: [sf1,sf10]
 
-drill:
-  <<: *var3
-  scale_factors: [sf1]
+# drill:
+#   <<: *var3
+#   scale_factors: [sf1]
+
+# spark: *var3

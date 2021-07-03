@@ -72,6 +72,40 @@ services:
             - 8080:8047
     {% endif %}
 
+    {% if "spark" in system%}
+    spark-master:
+        image: fedbench/spark
+        environment:
+        - SPARK_MODE=master
+        - SPARK_RPC_AUTHENTICATION_ENABLED=no
+        - SPARK_RPC_ENCRYPTION_ENABLED=no
+        - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+        - SPARK_SSL_ENABLED=no
+        ports:
+        - '8080:8080'
+        - '7077:7077'
+
+    spark-worker:
+        image: fedbench/spark
+        environment:
+        - SPARK_MODE=worker
+        - SPARK_MASTER_URL=spark://spark-master:7077
+        - SPARK_WORKER_MEMORY=10G
+        - SPARK_WORKER_CORES=6
+        - SPARK_RPC_AUTHENTICATION_ENABLED=no
+        - SPARK_RPC_ENCRYPTION_ENABLED=no
+        - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+        - SPARK_SSL_ENABLED=no
+        depends_on:
+        - spark-master
+    
+    client:
+        image: fedbench/spark
+        container_name: client
+        volumes:
+        - ./app.py:/app.py
+    {% endif %}
+
 volumes:
     test-data:
         external: true

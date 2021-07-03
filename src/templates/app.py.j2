@@ -1,0 +1,53 @@
+import findspark
+import re
+findspark.init() 
+from pyspark.conf import SparkConf
+from pyspark.sql import SparkSession
+import socket
+import sys
+
+def run_query(spark,sql):
+    sql = __parse_sql(sql)
+    result = spark.sql(sql)
+    result.show()
+
+def __parse_sql(sql):
+    pattern = re.compile("(\w*.public.\w*)")
+    return pattern.sub(lambda m: m.group().replace('.',"_"), sql)
+
+def get_spark_context(app_name: str) -> SparkSession:
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    conf = SparkConf()
+    conf.setAll(
+        [
+            (
+                "spark.master",
+                "spark://spark-master:7077",
+            ),
+            ("spark.driver.host", ip_address),
+            ("spark.submit.deployMode", "client"),
+            ("spark.driver.bindAddress", "0.0.0.0"),
+            ("spark.app.name", app_name),
+            ("spark.jars", "/opt/bitnami/spark/jars/postgresql.jar"),
+            ("spark.jars","/opt/bitnami/spark/jars/mysql.jar"),
+            ("spark.executor.memory", "8g")
+        ]
+    )
+
+    return SparkSession.builder.config(conf=conf).getOrCreate()
+
+
+if __name__ == "__main__":
+
+    # Regular Spark job executed on a Docker container
+    spark = get_spark_context("employees")
+    {% for temp_view in temp_views %}
+    {{temp_view}}
+    {%endfor%}
+    sql = '''
+    {{sql}}
+    '''
+    run_query(spark,sql)
+    spark.stop()
+
