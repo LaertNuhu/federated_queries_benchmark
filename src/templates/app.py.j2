@@ -31,7 +31,7 @@ def get_spark_context(app_name: str) -> SparkSession:
             ("spark.app.name", app_name),
             ("spark.jars", "/opt/bitnami/spark/jars/postgresql.jar"),
             ("spark.jars","/opt/bitnami/spark/jars/mysql.jar"),
-            ("spark.executor.memory", "10g")
+            ("spark.executor.memory", "8g")
         ]
     )
 
@@ -45,6 +45,9 @@ if __name__ == "__main__":
     {% for temp_view in temp_views %}
     {{temp_view}}
     {%endfor%}
-    run_query(spark,sys.argv[1])
+    sql = '''
+    {{sql}}
+    '''
+    run_query(spark,sql)
     spark.stop()
 

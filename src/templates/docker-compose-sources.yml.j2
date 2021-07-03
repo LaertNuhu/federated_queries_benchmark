@@ -90,8 +90,8 @@ services:
         environment:
         - SPARK_MODE=worker
         - SPARK_MASTER_URL=spark://spark-master:7077
-        - SPARK_WORKER_MEMORY=16G
-        - SPARK_WORKER_CORES=8
+        - SPARK_WORKER_MEMORY=10G
+        - SPARK_WORKER_CORES=6
         - SPARK_RPC_AUTHENTICATION_ENABLED=no
         - SPARK_RPC_ENCRYPTION_ENABLED=no
         - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no

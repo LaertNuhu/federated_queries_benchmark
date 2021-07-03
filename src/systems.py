@@ -38,10 +38,13 @@ class Presto(System):
         self.__cleanup()
 
     def run_query(self, sql, show=False):
+        start = time.time()
         self.cur.execute(sql)
         result = self.cur.fetchall()
+        end = time.time()
         if show:
             return result
+        return str(end-start)
 
     def post_startup(self):
         pass
@@ -82,9 +85,12 @@ class Drill(System, PyDrill):
         self.__cleanup()
 
     def run_query(self, sql, timeout=100000, show=False):
+        start = time.time()
         if show:
             return self.query(sql, timeout=timeout).to_dataframe()
-        return self.query(sql, timeout=timeout)
+        self.query(sql, timeout=timeout)
+        end = time.time()
+        return str(end-start)
 
     def post_startup(self):
         time.sleep(20)
@@ -146,18 +152,22 @@ class Spark(System):
         self.operator = Operator()
 
     def setup(self):
-        self.__create_configs()
+        Path(f"./src/compose_files/app.py").write_text("")
 
     def run_query(self, sql):
-        self.operator.execute(
-            f"docker exec drill /bin/sh -c 'python /app.py \"{sql}\"'"
+        self.__create_configs(sql)
+        start = time.time()
+        self.operator.run(
+            f'docker exec client /bin/sh -c "python /app.py"'
         )
+        end = time.time()
+        return str(end-start)
 
     def post_startup(self):
         pass
 
-    def __create_configs(self):
-        self.templator.render_spark_app_template(self.configurator.get_config())
+    def __create_configs(self,sql):
+        self.templator.render_spark_app_template(self.configurator.get_config(),sql)
 
 
 class Hive(System):

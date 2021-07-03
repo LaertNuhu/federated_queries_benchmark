@@ -92,20 +92,22 @@ class Templator:
             )
             Path(f"./catalog/{source}.properties").write_text(result)
 
-    def render_spark_app_template(self, config):
+    def render_spark_app_template(self, config,sql):
         app_path = Path("./src/templates/app.py.j2")
         sources = config["sources"]
         scale_factors = config["scale_factors"]
         temp_views = []
         for source in sources:
+            db_name = ""
             if "postgres" in source:
                 driver = "org.postgresql.Driver"
             if "mysql" in source:
                 driver = "com.mysql.jdbc.Driver"
+                db_name = "/public"
             for sf in scale_factors:
                 for table in sources[source]["tables"]:
                     temp_views.append(
-                        f'spark.read.format("jdbc").option("url", "{sources[source]["url"]}")'
+                        f'spark.read.format("jdbc").option("url", "{sources[source]["url"]}{db_name}")'
                         '.option("fetchSize","250000").option("numPartitions", "8")'
                         f'.option("dbtable", "{source[:-1]}_{sf}_{table}")'
                         f'.option("user","{sources[source]["user"]}")'
@@ -113,6 +115,6 @@ class Templator:
                         f'.option("driver", "{driver}").load()'
                         f'.createTempView("{source}_public_{source[:-1]}_{sf}_{table}")'
                     )
-        result = jinja2.Template(app_path.read_text()).render(temp_views=temp_views)
+        result = jinja2.Template(app_path.read_text()).render(temp_views=temp_views,sql=sql)
         Path(f"./src/compose_files/app.py").parent.mkdir(parents=True, exist_ok=True)
         Path(f"./src/compose_files/app.py").write_text(result)
