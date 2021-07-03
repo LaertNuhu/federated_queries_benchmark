@@ -30,6 +30,7 @@
 #   <<: *var1
 #   scale_factors: [sf1]
 
+# spark: *var1
 
 # presto: &var2
 #   sources:
@@ -63,8 +64,9 @@
 #   <<: *var2
 #   scale_factors: [sf1]
 
+# spark: *var2
 
-spark: &var3
+presto: &var3
   sources:
     mysql1:
       image: mysql
@@ -95,3 +97,5 @@ spark: &var3
 # drill:
 #   <<: *var3
 #   scale_factors: [sf1]
+
+# spark: *var3
